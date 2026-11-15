@@ -18,3 +18,5 @@
 - [v0.7 Alpha 可运行网页与说明](../../projects/fandom-ddl-calendar/v0.7-alpha/) — 日历筛选恢复、移除无效“今天”、日期弹窗按筛选显示、四色任务点击与双列导航修订。
 - [v0.7 全交互与交叉流程审计（2026-11-15）](INTERACTION_AUDIT_v0.7_2026-11-15.md) — 61 个事件分发分支梳理，54 项交互/交叉测试（42 通过、12 未达预期），按优先级列出需修复问题及复现步骤。
 - [v0.8 Alpha 修复记录](../../projects/fandom-ddl-calendar/v0.8-alpha/FIXES_v0.8.md) — v0.7 审计问题的修复范围、实际结果与验证边界。
+
+- [水墨冷峻 UI v0.9](../../projects/fandom-ddl-calendar/v0.9-ink/README.md) — 在 v0.8 逻辑不变前提下的独立水墨风格界面；[直接查看 HTML](../../projects/fandom-ddl-calendar/v0.9-ink/index.html)。
