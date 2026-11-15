@@ -11,3 +11,6 @@
 - [P0 JavaScript 排程实验及只读诊断](../../projects/fandom-ddl-calendar/p0/README.md) — 33 项单元测试、5 类旧模板适配，尚未替换正式日历。
 - [v0.4 alpha｜P0 集成验证版](../../projects/fandom-ddl-calendar/v0.4-alpha/README.md) — 新建独立浏览器数据区、引入双向日期计算、原计划基线、约定交稿与实际完成记录；仍为测试版，不覆盖旧版。
 - [P1 催稿与返修逻辑 v0.1](P1_FOLLOWUP_LOGIC_v0.1.md) — 联系历史、交稿状态、持续提醒、返修轮次与日期计算规则。
+
+- [v0.6 信息架构与我的进度规则](INFORMATION_ARCHITECTURE_v0.6.md) — 合并日历、个人进度、待提醒与未来 14 天；明确不做自动发消息和旧数据迁移。
+- [v0.6 Alpha 网页原型](../../projects/fandom-ddl-calendar/v0.6-alpha/README.md) — 独立新版本，不覆盖此前文件。
