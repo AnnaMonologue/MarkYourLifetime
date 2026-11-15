@@ -927,7 +927,10 @@ function readForm(id){const form=document.getElementById(id);if(!form||!form.rep
 
 
 
-function saveStepModal(){const values=readForm('step-form');if(!values)return;const ctx=ui.context||{},ref=ctx.stepId?stepBy(ctx.stepId):null,p=ref?.p||productBy(ctx.productId);if(!p)return;const targetList=ref?(ref.shared?p.shared:ref.t.steps):(ctx.trackId==='shared'?p.shared:p.tracks.find(t=>t.id===ctx.trackId)?.steps);if(!targetList)return;const kind=values.kind||'fixed';if(ref&&isShippingStep(ref.s)&&kind!=='external'){notify('运输必须保留为物流工序，只能修改预计天数');return}if(!ref&&ctx.trackId==='shared'&&/^(运输|快递运输|物流运输)$/.test(values.name.trim())){notify('运输节点已存在，请编辑现有物流工序');return}if(ctx.trackId==='shared'&&kind==='quantity'){notify('下印环节暂不支持数量型，请添加到独立工作路线');return}const s=ref?.s||mkStep(values.name,kind);s.name=values.name.trim();s.kind=kind;s.remindDays=Math.max(0,Math.floor(nval(values.remindDays,7)));s.nodeColor=values.nodeColor||'blue';s.remindColor=values.remindColor||'yellow';s.isMine=!!values.isMine;if(!s.name){notify('请输入环节名称');return}if(ref&&isShippingStep(ref.s))s.name='运输';if(kind==='quantity'){
+function saveStepModal(){const values=readForm('step-form');if(!values)return;const ctx=ui.context||{},ref=ctx.stepId?stepBy(ctx.stepId):null,p=ref?.p||productBy(ctx.productId);if(!p)return;const targetList=ref?(ref.shared?p.shared:ref.t.steps):(ctx.trackId==='shared'?p.shared:p.tracks.find(t=>t.id===ctx.trackId)?.steps);if(!targetList)return;const kind=values.kind||'fixed';if(ref&&isShippingStep(ref.s)&&kind!=='external'){notify('运输必须保留为物流工序，只能修改预计天数');return}if(!ref&&ctx.trackId==='shared'&&/^(运输|快递运输|物流运输)$/.test(values.name.trim())){notify('运输节点已存在，请编辑现有物流工序');return}if(ctx.trackId==='shared'&&kind==='quantity'){notify('下印环节暂不支持数量型，请添加到独立工作路线');return}if(ref&&ref.s.deliveryStatus==='accepted'&&values.completed===undefined&&kind!=='quantity'){
+ notify('已验收的节点不能在工序编辑中直接撤销；如需修改请追加返修');return;
+}
+const s=ref?.s||mkStep(values.name,kind);s.name=values.name.trim();s.kind=kind;s.remindDays=Math.max(0,Math.floor(nval(values.remindDays,7)));s.nodeColor=values.nodeColor||'blue';s.remindColor=values.remindColor||'yellow';s.isMine=!!values.isMine;if(!s.name){notify('请输入环节名称');return}if(ref&&isShippingStep(ref.s))s.name='运输';if(kind==='quantity'){
  s.plannedDays=values.plannedDays===''?null:Math.max(1,Math.ceil(nval(values.plannedDays,1)));
  s.unit=(values.unit||'P').trim();s.total=Math.max(0,nval(values.total));s.done=Math.max(0,nval(values.done));const base=s.unit==='字'?1000:1;s.unitMinutes=values.rate===''?null:Math.max(0,nval(values.rate))*60/base; if(!ref)s.completed=false;
  if(s.pieceStage){s.total=p.pieces?.length||0;s.done=0;s.unit='张'}
@@ -1048,6 +1051,8 @@ if(action==='save-revision'){
 if(action==='save-node'){
   const v=readForm('node-form');if(!v)return;const ref=stepBy(ui.context?.stepId);if(!ref)return;
   const st=ref.s,shipping=isShippingStep(st);
+  if(shipping&&v.actualFinished&&v.actualFinished>todayISO())return notify('实际寄出日期不能晚于今天');
+  if(!shipping&&v.eventDate&&v.eventDate>todayISO()&&['submitted','accepted','revision'].includes(v.deliveryStatus))return notify('实际提交或验收日期不能晚于今天');
   if(shipping){ref.p.actualDispatch=v.actualFinished||null;st.completed=!!v.completed;st.completedAt=st.completed?(v.actualFinished||null):null;if(!st.completed)ref.p.actualDispatch=null;}
   else{
     const old=FandomFollowUpP1.statusOf(st),next=v.deliveryStatus||'pending';
