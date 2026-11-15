@@ -15,3 +15,4 @@
 - [v0.6 信息架构与我的进度规则](INFORMATION_ARCHITECTURE_v0.6.md) — 合并日历、个人进度、待提醒与未来 14 天；明确不做自动发消息和旧数据迁移。
 - [v0.6 Alpha 网页原型](../../projects/fandom-ddl-calendar/v0.6-alpha/README.md) — 独立新版本，不覆盖此前文件。
 - [v0.7 交互重整与验收清单](INTERACTION_REDESIGN_v0.7_PLAN.md) — 恢复日历「全部 / 主催 / 我的」筛选、移除日历「今天」、明确四类卡片点击、个人进度与双列导航，以及 UI01–UI21 的测试标准。
+- [v0.7 Alpha 可运行网页与说明](../../projects/fandom-ddl-calendar/v0.7-alpha/) — 日历筛选恢复、移除无效“今天”、日期弹窗按筛选显示、四色任务点击与双列导航修订。
