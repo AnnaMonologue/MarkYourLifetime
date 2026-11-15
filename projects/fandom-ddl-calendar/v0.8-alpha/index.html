@@ -1,0 +1,1106 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="color-scheme" content="light" />
+<title>纸上赶稿 v0.8 Alpha｜交叉数据与日期修复</title>
+<style>
+:root{--bg:#f8f8f5;--panel:#fff;--panel2:#f5f6f4;--ink:#222726;--muted:#75807b;--line:#e6eae6;--accent:#30796e;--accent-soft:#e8f2ef;--warn:#b86b43;--warn-soft:#fff2e8;--blue:#6486a7;--shadow:0 15px 60px rgba(35,55,45,.09);--radius:14px}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Inter,"PingFang SC","Microsoft YaHei",system-ui,sans-serif;color:var(--ink);background:var(--bg)}button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed}input,select,textarea{color:var(--ink)}a{color:inherit;text-decoration:none}h1,h2,h3,p{margin:0}small,.muted{color:var(--muted)}.hide{display:none!important}.app{min-height:100vh;display:grid;grid-template-columns:218px minmax(0,1fr)}.sidebar{height:100vh;position:sticky;top:0;background:white;border-right:1px solid var(--line);padding:26px 15px;display:flex;flex-direction:column}.brand{padding:0 13px 32px;display:flex;gap:10px;align-items:center;font-size:20px;letter-spacing:1px;font-weight:800}.brand-mark{width:33px;height:33px;background:var(--accent-soft);color:var(--accent);border-radius:10px;display:grid;place-items:center;font-size:19px}.brand small{font-size:10px;display:block;letter-spacing:1.6px;font-weight:500;margin-top:2px}.nav{display:grid;gap:5px}.nav-button{border:0;background:transparent;color:#5e6763;width:100%;padding:12px 14px;text-align:left;display:flex;gap:11px;align-items:center;border-radius:10px}.nav-button:hover,.nav-button.selected{background:var(--accent-soft);color:var(--accent);font-weight:700}.nav-button svg{width:18px;height:18px;flex-shrink:0}.sidebar-bottom{margin-top:auto;padding:12px 8px 0}.sidebar-bottom button{border:1px solid var(--line);border-radius:10px;background:#fff;padding:10px;width:100%;margin-top:8px;color:#55635b;text-align:left}.sidebar-tip{font-size:12px;color:var(--muted);line-height:1.8;padding:8px 4px}.main{min-width:0;padding:28px max(30px,calc((100vw - 1410px)/2)) 55px}.topbar{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:25px}.eyebrow{font-size:11px;letter-spacing:2px;color:var(--accent);font-weight:800;margin-bottom:7px}.page-title{font-size:28px;letter-spacing:-.6px;font-weight:750}.page-desc{font-size:13px;color:var(--muted);margin-top:7px;line-height:1.7}.actions{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.btn{border:1px solid var(--line);background:white;border-radius:10px;padding:10px 15px;font-size:13px;font-weight:650;min-height:39px;display:inline-flex;align-items:center;justify-content:center;gap:7px;transition:background .15s,border-color .15s}.btn:hover{background:#f4f8f6;border-color:#c7d8d1}.btn.primary{background:var(--accent);border-color:var(--accent);color:white}.btn.primary:hover{background:#266459}.btn.soft{background:var(--accent-soft);border-color:transparent;color:var(--accent)}.btn.ghost{border:none;background:transparent;color:var(--muted)}.btn.sm{font-size:12px;padding:7px 11px;min-height:30px}.btn.danger{color:#ac4d47}.iconbtn{display:inline-grid;place-items:center;width:36px;height:36px;border:1px solid var(--line);background:white;border-radius:10px;font-size:19px;color:#6e7973}.iconbtn:hover{background:var(--accent-soft)}.metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:20px}.metric{background:white;border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;min-height:118px}.metric .label{font-size:12px;color:var(--muted);margin-bottom:13px}.metric .num{font-size:27px;font-weight:760;letter-spacing:-.5px}.metric .sub{font-size:12px;color:var(--muted);margin-top:7px}.metric.warn{background:#fff9f5;border-color:#f1e4d8}.metric.warn .num{color:var(--warn)}.pane{background:white;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}.pane-heading{padding:17px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:15px}.pane-title{font-weight:750;font-size:15px}.pane-sub{font-size:12px;color:var(--muted);margin-top:4px}.cal-tools{display:flex;align-items:center;gap:9px}.cal-layout{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:16px;align-items:start}.weekdays{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));background:#fafbf9;border-bottom:1px solid var(--line)}.weekdays div{text-align:center;padding:12px 3px;font-size:12px;color:var(--muted)}.calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr))}.day{min-width:0;height:132px;padding:8px 6px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);overflow:auto;background:white;scrollbar-width:thin}.day:nth-child(7n){border-right:0}.day.faded{background:#fafbf9;color:#a2aaa6}.day.today{background:#f6faf8}.day.selected{outline:2px solid rgba(48,121,110,.4);outline-offset:-2px}.day-date{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#89928e;margin-bottom:7px}.day-date strong{font-size:12px;font-weight:650;color:var(--ink);width:25px;height:25px;display:grid;place-items:center;border-radius:50%}.day.today .day-date strong{background:var(--accent);color:white}.day-task{display:block;width:100%;border:1px solid #dce8e3;background:#f2f8f5;border-radius:6px;padding:6px;margin-bottom:5px;text-align:left;font-size:10px;color:#3d695f;line-height:1.4}.day-task:hover{border-color:var(--accent);background:#e6f3ee}.day-task .task-name{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:750}.day-task .task-amt{display:block;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.day-task.external{background:#f5f6fa;color:#64748a;border-color:#e5e8ef}.day-task.completed{background:#f5f5f2;color:#84918a;text-decoration:line-through;border-color:#edefea}.day-task.deadline{background:#fff0e6;color:#a45e39;border-color:#f4dccb}.day .overflow{font-size:11px;color:var(--muted);padding:2px}.right-column{display:grid;gap:15px}.right-body{padding:17px}.focus-date{font-size:12px;color:var(--muted);margin-bottom:13px}.focus-item{border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:9px}.focus-name{font-size:13px;font-weight:750;line-height:1.5}.focus-meta{font-size:11px;color:var(--muted);line-height:1.65;margin-top:4px}.focus-item .btn{width:100%;margin-top:9px}.empty{padding:45px 22px;text-align:center;color:var(--muted);font-size:13px;line-height:1.9}.empty strong{display:block;color:var(--ink);font-size:17px;margin-bottom:4px}.empty .btn{margin-top:14px}.deadline-row{padding:13px 0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:10px;align-items:center}.deadline-row:last-child{border-bottom:0}.deadline-name{font-size:13px;font-weight:700}.deadline-meta{font-size:11px;color:var(--muted);margin-top:5px}.deadline-value{white-space:nowrap;font-size:12px;color:var(--accent);font-weight:700}.pill{font-size:11px;background:var(--panel2);border-radius:100px;padding:4px 9px;color:#687571;display:inline-block}.pill.green{color:var(--accent);background:var(--accent-soft)}.pill.orange{color:#a7633f;background:var(--warn-soft)}.rows{display:grid;gap:13px}.item-card{border:1px solid var(--line);border-radius:var(--radius);padding:17px;background:white}.item-header{display:flex;justify-content:space-between;gap:14px;align-items:flex-start}.item-title{font-size:17px;font-weight:750}.item-meta{font-size:12px;color:var(--muted);line-height:1.7;margin-top:6px}.row-end{display:flex;align-items:center;gap:8px}.bar{height:7px;background:#e9edeb;border-radius:20px;overflow:hidden}.bar-inner{height:100%;background:var(--accent);border-radius:20px}.progress-row{margin-top:14px;display:grid;gap:9px}.progress-top{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:var(--muted)}.type-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:12px 0}.type-card{background:white;border:1px solid var(--line);border-radius:12px;text-align:left;padding:14px 9px;min-height:86px;display:flex;flex-direction:column;gap:9px}.type-card.selected{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}.type-card .type-icon{font-size:21px}.type-card span{font-size:12px;font-weight:750}.section-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:24px 0 12px}.section-head h2{font-size:17px}.detail-hero{background:white;border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-bottom:18px;display:flex;justify-content:space-between;gap:18px}.detail-hero h2{font-size:22px;margin-bottom:7px}.track-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}.track-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:15px}.track-head{display:flex;justify-content:space-between;gap:9px;align-items:start;margin-bottom:14px}.track-name{font-size:14px;font-weight:750}.track-owner{font-size:11px;color:var(--muted);margin-top:4px}.step-item{padding:11px 0;border-top:1px solid var(--line)}.step-info{display:flex;align-items:start;justify-content:space-between;gap:8px}.step-name{font-size:13px;font-weight:700}.step-details{font-size:11px;color:var(--muted);margin:5px 0 0;line-height:1.7}.step-actions{display:flex;gap:3px}.step-actions button{border:0;background:transparent;color:#83908a;padding:3px 5px;font-size:13px}.step-actions button:hover{color:var(--accent)}.step-controls{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}.step-controls .btn{min-height:29px}.production-chain{display:flex;flex-wrap:wrap;gap:8px;padding:18px}.chain-unit{border:1px solid var(--line);border-radius:9px;padding:10px 13px;background:#fff;min-width:106px}.chain-unit .label{font-size:12px;font-weight:700}.chain-unit .date{font-size:10px;color:var(--muted);margin-top:5px}.chain-unit .tools{display:flex;gap:7px;margin-top:8px}.chain-unit .tools button{border:0;background:transparent;padding:0;color:#637c73;font-size:11px}.arrow{display:flex;align-items:center;color:#adb7b0}.pieces-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;padding:16px}.piece-card{border:1px solid var(--line);border-radius:10px;padding:12px}.piece-title{font-size:12px;font-weight:750;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}.piece-chips{display:flex;gap:4px;flex-wrap:wrap}.piece-chip{font-size:11px;padding:7px 8px;border:1px solid var(--line);border-radius:7px;background:white;color:var(--muted)}.piece-chip.active{color:var(--accent);border-color:#a9cfc0;background:var(--accent-soft)}.piece-chip:hover{border-color:var(--accent)}.alert{border:1px solid #f0d6bb;background:#fffbf6;color:#93603c;padding:12px 15px;font-size:12px;line-height:1.7;border-radius:10px;margin:12px 0}.toast{position:fixed;bottom:25px;left:50%;transform:translateX(-50%);background:#253b34;color:white;padding:12px 17px;border-radius:11px;font-size:12px;z-index:120;box-shadow:var(--shadow)}.modal-layer{position:fixed;inset:0;background:rgba(30,40,35,.3);display:flex;align-items:center;justify-content:center;padding:18px;z-index:100;overflow-y:auto}.modal{background:white;width:min(580px,100%);max-height:calc(100vh - 36px);overflow:auto;border-radius:18px;box-shadow:var(--shadow)}.modal.wide{width:min(700px,100%)}.modal-top{padding:22px 25px 12px;display:flex;justify-content:space-between;align-items:start;gap:15px}.modal-top h2{font-size:20px}.modal-top p{font-size:12px;color:var(--muted);margin-top:7px;line-height:1.7}.modal-body{padding:12px 25px 22px}.modal-foot{border-top:1px solid var(--line);padding:15px 25px;display:flex;align-items:center;justify-content:flex-end;gap:8px}.xbtn{border:0;background:transparent;font-size:22px;color:var(--muted);line-height:1}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.field{display:grid;gap:7px;margin-bottom:14px}.field label{font-size:12px;font-weight:700;color:#4a5650}.field input,.field select,.field textarea{width:100%;padding:11px 12px;border:1px solid #dce3de;border-radius:9px;background:white;font-size:13px;outline:none;min-height:41px}.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}.field small{font-size:11px;line-height:1.6}.choice-row{display:flex;gap:7px;flex-wrap:wrap}.choice{border:1px solid var(--line);background:white;border-radius:9px;padding:10px 13px;color:#59685f;font-size:12px}.choice.active{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}.welcome{padding:23px 25px 5px}.welcome h2{font-size:24px;margin-bottom:9px}.welcome p{font-size:13px;color:var(--muted);line-height:1.9}.timer-face{background:var(--panel2);border-radius:13px;text-align:center;padding:25px 12px;margin-bottom:17px}.timer-value{font-size:40px;font-weight:750;letter-spacing:1.6px;font-variant-numeric:tabular-nums}.timer-sub{font-size:12px;color:var(--muted);margin-top:7px}.timer-buttons{display:flex;gap:10px;justify-content:center;margin:14px 0 8px}.log-list{display:grid;gap:8px;margin:13px 0}.log-line{border:1px solid var(--line);border-radius:9px;padding:11px;display:flex;justify-content:space-between;gap:12px;align-items:center}.log-title{font-size:12px;font-weight:700}.log-detail{font-size:11px;color:var(--muted);margin-top:5px}.help-note{font-size:12px;color:var(--muted);line-height:1.8}.mobile-nav{display:none}.mobile-toggle{display:none}.week-agenda{display:none}.week-day{padding:13px 15px;border-bottom:1px solid var(--line)}.week-day-head{display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:750;margin-bottom:9px}.week-date.today{color:var(--accent)}.week-date .small-day{font-weight:500;color:var(--muted);margin-left:8px}.week-item{padding:12px 13px;border:1px solid #dce8e3;border-radius:9px;background:#f2f8f5;margin:7px 0;width:100%;text-align:left;display:flex;justify-content:space-between;align-items:center;gap:12px}.week-item .primary-label{font-weight:750;font-size:12px;color:#315d50}.week-item .secondary-label{font-size:11px;color:#607970;margin-top:4px}.week-item.external{background:#f5f6fa;border-color:#e5e8ef}.week-item.deadline{background:#fff4e9;border-color:#edd9c7}.week-empty{font-size:11px;color:var(--muted);padding:5px 0}.line{height:1px;background:var(--line);margin:17px 0}.badge-count{font-size:11px;color:var(--accent);background:var(--accent-soft);padding:5px 8px;border-radius:7px}
+@media (max-width:1240px){.cal-layout{grid-template-columns:minmax(0,1fr)}.right-column{grid-template-columns:repeat(2,minmax(0,1fr))}.main{padding:25px 28px 60px}}
+@media (max-width:860px){.app{display:block}.sidebar{display:none}.main{padding:20px 15px 90px}.page-title{font-size:23px}.metrics{gap:8px}.metric{padding:13px;min-height:96px}.metric .num{font-size:22px}.metric .sub{font-size:10px}.topbar{align-items:flex-start}.cal-layout{display:block}.right-column{grid-template-columns:1fr;margin-top:15px}.day{height:115px;padding:5px 3px}.day-task{padding:4px 3px;font-size:9px}.day-date{margin-bottom:3px}.day .overflow{font-size:9px}.mobile-toggle{display:inline-flex}.mobile-week-mode .weekdays,.mobile-week-mode .calendar-grid{display:none}.mobile-week-mode .week-agenda{display:block}.mobile-nav{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:70;background:#fff;border-top:1px solid var(--line);padding:8px 5px max(8px,env(safe-area-inset-bottom));justify-content:space-around}.mobile-nav button{border:0;background:transparent;color:var(--muted);display:grid;justify-items:center;gap:3px;font-size:10px;padding:6px 20px}.mobile-nav button.selected{color:var(--accent);font-weight:800}.mobile-nav svg{width:19px;height:19px}.type-grid{grid-template-columns:repeat(3,1fr)}.form-grid{grid-template-columns:1fr}.pane-heading{flex-wrap:wrap}.detail-hero{flex-wrap:wrap}}
+@media (max-width:540px){.page-desc{font-size:12px}.topbar{flex-wrap:wrap;gap:12px}.actions{width:100%}.actions .btn{flex:1}.metrics{grid-template-columns:repeat(3,1fr)}.metric{padding:10px}.metric .label{font-size:10px}.metric .num{font-size:20px}.metric .sub{font-size:10px}.day{height:103px}.day-task{font-size:8px}.calendar-grid .day .day-task:nth-of-type(n+4){display:none}.modal-layer{padding:8px}.modal{max-height:calc(100vh - 16px)}.modal-top{padding:18px 17px 9px}.modal-body{padding:10px 17px 16px}.modal-foot{padding:12px 17px}.type-grid{grid-template-columns:repeat(3,1fr);gap:6px}.type-card{min-height:70px}.type-card span{font-size:11px}.track-grid{grid-template-columns:1fr}}
+
+.production-chain{display:flex;flex-direction:column;gap:7px;padding:13px}.chain-unit{display:flex;gap:12px;align-items:center;flex-wrap:wrap;width:100%;padding:12px 14px}.chain-unit .label{min-width:110px}.chain-unit .date{margin-top:0;flex:1}.chain-unit .tools{margin-top:0}.chain-unit .tools button{padding:5px 2px}
+.focus-item.finished-focus,.week-item.completed{background:#f5f6f3;border-color:#e9ece8;opacity:.74}
+/* v0.2: restrained selection controls, compact content lanes, muted completed work */
+.delivery-select{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:5px}
+.delivery-option{display:block;position:relative;cursor:pointer}
+.delivery-option input{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
+.delivery-option span{display:block;padding:13px 14px;text-align:center;border:1px solid var(--line);border-radius:10px;background:#fff;color:#53635c;font-size:13px;font-weight:650;transition:background .15s,border-color .15s}
+.delivery-option input:checked+span{color:var(--accent);background:var(--accent-soft);border-color:var(--accent)}
+.delivery-option input:focus-visible+span{outline:3px solid #a4c9be;outline-offset:2px}
+.type-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;margin:8px 0}
+.type-card{min-height:46px;padding:10px 4px;display:grid;place-items:center;text-align:center;font-weight:650;font-size:13px;border-radius:9px;line-height:1.35}
+.type-card.selected{background:var(--accent-soft);border-color:var(--accent)}
+.track-head{align-items:center}
+.step-link{appearance:none;border:0;background:transparent;padding:0;text-align:left;color:var(--ink);font-size:13px;font-weight:750;cursor:pointer}
+.step-link:hover{color:var(--accent);text-decoration:underline}
+.step-item.is-finished,.chain-unit.is-finished{background:#f4f5f3;color:#89928e}
+.step-item.is-finished{border-radius:9px;padding:11px 8px;margin:4px -8px 0;opacity:.7}
+.step-item.is-finished .step-link,.chain-unit.is-finished .step-link{color:#8b948e}
+.step-item.is-finished .bar-inner{background:#bbc3be}
+.chain-unit.is-finished{order:99;opacity:.72}
+.chain-unit.is-finished+.arrow{opacity:.25}
+.muted-pill{color:#737c77;background:#e7eae7;margin-left:5px}
+.mark-done{margin-top:15px;border-top:1px solid var(--line);padding-top:15px;display:grid;gap:5px}
+.done-check{display:flex;gap:10px;align-items:center;font-weight:650;font-size:13px;cursor:pointer}
+.done-check input{accent-color:var(--accent);width:18px;height:18px}
+.mark-done small{font-size:11px;padding-left:28px}
+@media(max-width:540px){.type-grid{gap:4px}.type-card{font-size:12px;padding:9px 2px;min-height:44px}}
+
+
+/* v0.3 清晰化日历：减少层级、三种视图独立承载信息 */
+:root{--ddl:#c34b52;--ddl-bg:#fff0f0;--node:#4f78a6;--node-bg:#edf3fc;--remind:#ad7a21;--remind-bg:#fff7df;--personal:#287f62;--personal-bg:#edf8f2}
+.calendar-toolbar{padding:17px 20px 13px;display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}
+.calendar-toolbar-main{display:flex;align-items:center;gap:26px;flex-wrap:wrap}.cal-month{font-size:17px;font-weight:750;white-space:nowrap}
+.mode-tabs{display:inline-flex;padding:4px;background:#f3f5f3;border-radius:12px;gap:3px}.mode-tab{border:0;border-radius:9px;padding:8px 17px;background:transparent;font-size:13px;color:#67736c;font-weight:650}.mode-tab.active{background:#fff;color:#245e51;box-shadow:0 1px 5px rgba(0,0,0,.07)}.mode-tab:hover:not(.active){background:#e9efeb}
+.cal-hint{border-top:1px solid var(--line);padding:11px 20px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--muted)}.legend{display:flex;gap:15px;align-items:center;flex-wrap:wrap}.legend-item{display:flex;align-items:center;gap:6px;white-space:nowrap}.legend-dot{display:inline-block;width:8px;height:8px;border-radius:3px}.legend-dot.red{background:var(--ddl)}.legend-dot.blue{background:var(--node)}.legend-dot.yellow{background:var(--remind)}.legend-dot.green{background:var(--personal)}
+.clean-day{height:125px;overflow:hidden;padding:7px 5px}.clean-day .day-date{margin-bottom:5px}.day-count{font-size:10px;color:#9ba7a0}.day-entries{display:grid;gap:4px}.calendar-chip{display:block;width:100%;border:0;border-left:3px solid;border-radius:4px;padding:5px 6px;text-align:left;font-size:10px;font-weight:650;line-height:1.35;min-width:0}.chip-name{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.chip-description{display:block;font-size:11px;font-weight:400;margin-top:3px;opacity:.8;line-height:1.4}.tone-red{background:var(--ddl-bg)!important;color:var(--ddl)!important;border-color:var(--ddl)!important}.tone-yellow{background:var(--remind-bg)!important;color:var(--remind)!important;border-color:var(--remind)!important}.tone-orange{background:#fff1e8!important;color:#b2683b!important;border-color:#c98954!important}.tone-blue{background:var(--node-bg)!important;color:var(--node)!important;border-color:var(--node)!important}.tone-purple{background:#f5f0fc!important;color:#7d60ad!important;border-color:#9273c2!important}.tone-gray{background:#f1f2f2!important;color:#657274!important;border-color:#849091!important}.tone-green{background:var(--personal-bg)!important;color:var(--personal)!important;border-color:var(--personal)!important}
+.calendar-chip:hover,.focus-entry:hover,.week-item:hover{filter:brightness(.97)}.more-entries{padding:3px 6px;border:0;background:none;font-size:10px;color:#7c8981;text-align:left}
+.selected-day-pane{margin-top:16px}.focus-list{padding:12px 17px;display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:9px}.focus-entry{border:1px solid var(--line);border-left-width:4px;border-radius:9px;text-align:left;padding:11px 13px;font-size:13px;font-weight:650;min-height:64px}.focus-empty{grid-column:1/-1;padding:17px 5px;color:var(--muted);font-size:12px}.selected-day-count{font-weight:500;font-size:11px;color:var(--muted)}
+.clean-calendar .week-item{width:100%;border-left-width:4px;padding:10px 12px;display:block;text-align:left;min-height:50px;line-height:1.4}.clean-calendar .week-item .chip-name{font-size:12px}.clean-calendar .week-item .chip-description{font-size:11px}
+.mine-mark{font-weight:600;font-size:10px;margin-left:6px;color:var(--personal);background:var(--personal-bg);border-radius:6px;padding:3px 6px;white-space:nowrap}.work-owner-check{display:flex;align-items:center;gap:8px;margin-top:17px;font-size:13px;font-weight:600}.work-owner-check input{accent-color:var(--accent);width:16px;height:16px}.form-divider{border-top:1px solid var(--line);margin:19px 0 16px}.reminder-quick{color:#9a731c!important}.node-overview{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.node-overview>div{display:grid;gap:5px;background:var(--panel2);padding:12px;border-radius:9px}.node-overview small{font-size:11px}.node-overview strong{font-size:13px;word-break:break-word}
+@media(max-width:860px){.calendar-toolbar{padding:13px 14px}.calendar-toolbar-main{width:100%;justify-content:space-between;gap:8px}.mode-tabs{width:100%;display:flex;order:2}.mode-tab{flex:1;padding:10px 0}.cal-hint{padding:10px 14px;align-items:start}.clean-calendar .week-agenda{display:block}.clean-calendar:not(.mobile-week-mode) .week-agenda{display:none}.clean-calendar.mobile-week-mode .calendar-grid,.clean-calendar.mobile-week-mode .weekdays{display:none}.focus-list{grid-template-columns:1fr}.clean-day{height:105px}.node-overview{grid-template-columns:1fr}}
+
+
+/* v0.3 制品详情：可展开路线，默认折叠所有编辑操作 */
+.slim-tracks{display:grid;gap:10px}.slim-track{padding:0;overflow:hidden}.slim-track-header{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:15px 18px}.slim-track-header .row-end{flex-shrink:0}.track-overview{min-width:0}.track-summary{font-size:12px;margin-top:6px;color:var(--muted)}.slim-step-list{border-top:1px solid var(--line)}.slim-step{border-bottom:1px solid var(--line);padding:10px 17px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}.slim-step:last-child{border-bottom:none}.slim-step-main{flex:1;min-width:160px;text-align:left;border:0;background:transparent;display:grid;gap:5px;padding:5px 0}.slim-step-main:hover .slim-step-name{color:var(--accent)}.slim-step-name{font-size:13px;font-weight:700}.slim-step-meta{font-size:11px;color:var(--muted)}.slim-step-ends{display:flex;gap:8px;align-items:center}.reminder-pill{border:0;border-radius:6px;background:var(--remind-bg);color:var(--remind);padding:6px 9px;font-size:11px}.slim-action{border:1px solid var(--line);background:#fff;color:#596963;border-radius:7px;padding:6px 9px;font-size:11px}.slim-manage{width:100%;display:flex;gap:12px;justify-content:end;border-top:1px dashed var(--line);padding-top:9px}.slim-manage button{font-size:11px;background:none;border:0;color:#64776e}.slim-manage button:hover{color:var(--accent)}.slim-track-foot{display:flex;justify-content:flex-end;gap:8px;padding:10px 17px;background:#fafbf9}.step-faded{opacity:.52;background:#f7f8f6}.step-faded .reminder-pill{display:none}.compact-production,.compact-logs{padding:5px 0}.compact-hero{padding:18px 20px}.compact-hero h2{font-size:21px}.compact-logs .log-line{padding:12px 17px}
+@media(max-width:540px){.slim-track-header{padding:13px 12px;gap:9px}.slim-step{padding:9px 12px}.slim-step-ends{gap:5px}.reminder-pill{padding:5px 6px}.slim-manage{flex-wrap:wrap}.compact-hero{display:block}.compact-hero .row-end{margin-top:12px}}
+
+/* v0.5: small, persistent organizer inbox; delivery history only when opening a node */
+.followup-inbox{margin:0 0 16px;border-color:#e7e9df}.followup-inbox .pane-heading{padding:14px 17px}
+.inbox-sub{font-size:11px}.inbox-list{padding:4px 15px 8px}.inbox-row{padding:11px 2px;display:flex;justify-content:space-between;gap:10px;align-items:center;border-bottom:1px solid var(--line)}.inbox-row:last-child{border-bottom:0}
+.inbox-main{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0}.inbox-main strong{font-size:12px;font-weight:650}.inbox-main small{font-size:11px}.inbox-state{font-size:10px;color:#926f1b;background:#fff4d9;border-radius:6px;padding:3px 7px;white-space:nowrap}.inbox-state.urgent{color:#a64040;background:#fff0ef}.inbox-actions{display:flex;gap:6px;flex-shrink:0}.inbox-more{font-size:11px;color:var(--muted);padding:11px 0}.node-state-line{display:flex;align-items:center;gap:9px;margin:0 0 13px}.history-list{border-top:1px solid var(--line);padding-top:10px;max-height:160px;overflow:auto}.history-entry{font-size:11px;color:var(--muted);padding:5px 0}.modal-foot{flex-wrap:wrap}
+@media(max-width:600px){.inbox-row{align-items:flex-start;flex-direction:column}.inbox-actions{align-self:flex-end}.inbox-sub{display:none}}
+/* v0.6：日历合并与分栏，所有日常操作集中在“我的进度” */
+.app{grid-template-columns:196px minmax(0,1fr)}
+.app.has-subnav{grid-template-columns:196px 218px minmax(0,1fr)}
+.secondary-nav{height:100vh;position:sticky;top:0;min-width:0;background:#fbfcfa;border-right:1px solid var(--line);padding:29px 12px;overflow:auto}
+.secondary-title{display:flex;align-items:center;justify-content:space-between;padding:0 11px 17px;font-size:13px;color:#53645c;font-weight:750}
+.secondary-title button{background:white;border:1px solid var(--line);border-radius:8px;width:29px;height:29px;font-size:18px;color:#477368}
+.secondary-list{display:grid;gap:4px}.secondary-item{border:0;background:transparent;text-align:left;padding:12px;border-radius:9px;display:grid;gap:5px;width:100%;min-width:0;color:#5d675f}
+.secondary-item strong{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.secondary-item small{font-size:11px;color:#86918a}
+.secondary-item:hover,.secondary-item.active{background:#eaf1ec;color:#245e51}.secondary-empty{color:var(--muted);padding:15px;font-size:12px}
+.mobile-submenu{display:none}.main{padding-left:30px;padding-right:30px;max-width:1700px}.unified-calendar .calendar-toolbar{padding:18px 20px}.unified-calendar .cal-hint{padding:12px 20px}
+.unified-calendar .day-date-link{border:0;background:transparent;width:100%;padding:0;text-align:left;cursor:pointer}.unified-calendar .day-date-link:hover strong{background:#e8f2ef;color:var(--accent)}
+.unified-calendar .clean-day{height:142px}.unified-calendar .day-entries{display:grid;gap:4px}.unified-calendar .calendar-chip{margin:0}.unified-calendar .legend{gap:16px;flex-wrap:wrap}
+.progress-header{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-bottom:16px}.progress-header h2{font-size:22px}.progress-date-controls{display:flex;align-items:center;gap:6px}.progress-date-controls input{border:1px solid var(--line);border-radius:9px;background:#fff;padding:9px 10px;font-size:12px;max-width:155px}
+.progress-summary{display:flex;gap:24px;align-items:center;flex-wrap:wrap;background:white;border:1px solid var(--line);border-radius:12px;padding:14px 20px;margin-bottom:15px;color:#6c7771;font-size:12px}
+.progress-summary strong{font-size:18px;color:#223a30;margin-right:3px}.progress-columns{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(270px,1fr);gap:15px;align-items:start}.progress-work,.progress-followups{display:grid;gap:15px}
+.progress-task-list,.attention-list,.upcoming-list,.recent-list{padding:12px;display:grid;gap:10px}.today-task{border:1px solid var(--line);border-radius:11px;padding:15px 16px;background:#fff}.today-task.completed-work{background:#f6f7f5;color:#8a958d}.today-task-header{display:flex;justify-content:space-between;align-items:start;gap:12px}.today-task h3{font-size:15px;margin:5px 0 0}.today-task small{font-size:11px;color:var(--muted)}.status-todo,.status-done{font-size:11px;background:#e9f3ee;border-radius:16px;padding:5px 9px;white-space:nowrap;color:#286750}.status-done{background:#eff0ec;color:#8c968e}
+.today-task-plan{display:flex;flex-wrap:wrap;gap:15px;font-size:12px;color:#63726a;margin-top:15px}.today-task-plan strong{font-size:14px;color:#273e33}.today-bar{margin-top:13px;background:#edf1ed;border-radius:20px;height:6px;overflow:hidden}.today-bar>span{display:block;height:100%;background:#4b9677}.today-remaining{font-size:11px;color:var(--muted);margin-top:7px}.today-task .btn{margin-top:12px}
+.empty-inline{font-size:12px;padding:20px 13px;color:var(--muted);line-height:1.8}.attention-item{display:flex;gap:9px;padding:12px;border-bottom:1px solid var(--line);align-items:start}.attention-item:last-child{border-bottom:0}.attention-dot,.upcoming-mark{width:7px;height:7px;background:#d1a03e;border-radius:50%;flex-shrink:0;margin-top:6px}.attention-dot.red,.upcoming-mark.red{background:#c34b52}.upcoming-mark.blue{background:#6382ac}.attention-body{flex:1;display:grid;gap:6px;min-width:0}.attention-body strong{font-size:12px;line-height:1.55}.attention-body small{color:var(--muted);font-size:11px}.attention-actions{display:flex;gap:5px;flex-wrap:wrap}.attention-actions .btn{padding:5px 8px;font-size:11px}
+.upcoming-row{border:0;border-bottom:1px solid var(--line);background:white;display:flex;align-items:center;gap:11px;text-align:left;padding:12px 7px;font-size:12px;width:100%;color:#495b51}.upcoming-row:last-child{border-bottom:0}.upcoming-row:hover{background:#f6f9f6}.upcoming-date{font-variant-numeric:tabular-nums;color:var(--muted);width:40px;flex-shrink:0}.upcoming-mark{margin:0}.recent-entry{display:grid;gap:4px;font-size:12px;padding:10px 8px;border-bottom:1px solid var(--line)}.recent-entry small{color:var(--muted)}
+.day-modal-rows{padding:4px 0;display:grid;gap:8px}.day-modal-rows .focus-entry{width:100%}.event-products{padding:9px 12px}.event-product{width:100%;border:0;border-bottom:1px solid var(--line);background:white;padding:16px;text-align:left;display:flex;justify-content:space-between;gap:10px;align-items:center;color:#4f6256}.event-product:last-child{border-bottom:0}.event-product>span:first-child{display:grid;gap:7px}.event-product strong{font-size:14px}.event-product small{color:var(--muted);font-size:11px}.event-product:hover{background:#f6f9f7}
+@media(max-width:1100px){.app.has-subnav{grid-template-columns:185px 185px minmax(0,1fr)}.app{grid-template-columns:185px minmax(0,1fr)}.main{padding-left:20px;padding-right:20px}.progress-columns{grid-template-columns:1fr}}
+@media(max-width:860px){.app,.app.has-subnav{display:block}.sidebar,.secondary-nav{display:none}.mobile-submenu{display:flex;gap:7px;overflow-x:auto;margin:0 0 15px;scrollbar-width:thin;padding-bottom:6px}.mobile-submenu button{border:1px solid var(--line);border-radius:30px;padding:8px 12px;background:white;white-space:nowrap;font-size:12px;color:#64756c}.mobile-submenu button.active{background:var(--accent-soft);border-color:#add0c3;color:var(--accent);font-weight:700}.main{padding:19px 14px 105px}.unified-calendar .clean-day{height:112px}.unified-calendar .cal-hint{padding:12px 13px}.progress-header{align-items:flex-start;flex-wrap:wrap}.progress-date-controls{width:100%}.progress-columns{grid-template-columns:1fr}.progress-summary{gap:15px}.attention-item{flex-wrap:wrap}.attention-actions{margin-left:16px}.mobile-nav button{padding:6px 10px}}
+
+/* v0.7: keep one calendar, restore functional filters; mobile first controls */
+.calendar-toolbar-main{gap:16px}.calendar-filter{display:inline-flex;gap:3px;background:#f3f5f3;padding:4px;border-radius:10px}
+.calendar-filter button{border:0;border-radius:7px;background:transparent;padding:8px 17px;color:#63736b;font-size:12px;font-weight:650;min-width:61px}
+.calendar-filter button[aria-pressed="true"]{background:white;color:#266c5c;box-shadow:0 1px 5px rgba(0,0,0,.08)}
+.calendar-filter button:focus-visible,.calendar-chip:focus-visible,.week-item:focus-visible,.focus-entry:focus-visible{outline:2px solid #267966;outline-offset:2px}
+.calendar-view-picker{display:none;gap:3px;background:#f4f6f3;border-radius:9px;padding:3px}
+.calendar-view-picker button{border:0;background:transparent;padding:7px 11px;border-radius:7px;color:#65736a;font-size:12px}
+.calendar-view-picker button[aria-pressed="true"]{background:white;color:var(--accent);font-weight:700}
+.unified-calendar .calendar-toolbar{gap:12px}
+.my-progress-recent{margin-top:15px}.my-progress-recent .recent-list{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+@media(max-width:860px){.unified-calendar .calendar-toolbar{padding:13px}.calendar-toolbar-main{width:100%;display:grid;grid-template-columns:1fr;gap:10px}.calendar-filter{display:flex;width:100%}.calendar-filter button{flex:1}.cal-tools{width:100%;justify-content:flex-end}.cal-month{margin-right:auto}.calendar-view-picker{display:flex}.my-progress-recent .recent-list{grid-template-columns:1fr}}
+@media(max-width:520px){.calendar-filter button{padding:9px 7px}.cal-tools .iconbtn{width:38px;height:38px}}
+.today-task.overdue-work{border-color:#dfb6a0;background:#fff9f6}
+.overdue-note{color:#ad5538;font-size:12px;font-weight:600}
+.calendar-chip.is-past,.week-item.is-past,.focus-entry.is-past{opacity:.58;filter:saturate(.45)}
+.impact-note{font-size:13px;line-height:1.7;margin-bottom:10px}
+.impact-rows{display:grid;gap:8px}.impact-row{display:grid;gap:5px;padding:10px;border:1px solid var(--line);border-radius:9px;background:#fafbf9}
+.impact-row small{font-size:12px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="modal-root"></div>
+<div id="toast-root"></div>
+<script>
+/* 纸上赶稿 P0 — Pure scheduling core, browser + Node (CommonJS), 2026-11-15.
+   No DOM, no localStorage, no mutation of input. Dates are calendar days, not elapsed hours.
+   This is a separately testable module, NOT a drop-in replacement for v0.3.1. */
+(function (root, build) {
+  const api = build();
+  if (typeof module === 'object' && module.exports) module.exports = api;
+  if (root) root.FandomSchedulerP0 = api;
+})(typeof globalThis !== 'undefined' ? globalThis : this, function () {
+  'use strict';
+  const DAY = 86400000;
+  function parseDate(s) {
+    if (typeof s !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(s)) throw new Error('日期必须是 YYYY-MM-DD: ' + s);
+    const t = Date.parse(s + 'T00:00:00.000Z');
+    if (!Number.isFinite(t) || new Date(t).toISOString().slice(0, 10) !== s) throw new Error('非法日期: ' + s);
+    return t;
+  }
+  function dateOf(t) { return new Date(t).toISOString().slice(0, 10); }
+  function addDate(s, n) { if (!Number.isInteger(n)) throw new Error('日期偏移必须是整数'); return dateOf(parseDate(s) + n * DAY); }
+  function daysBetween(a, b) { return (parseDate(b) - parseDate(a)) / DAY; }
+  function maxDate(...xs) { return xs.reduce((a, b) => !a || b > a ? b : a, null); }
+  function minDate(...xs) { return xs.reduce((a, b) => !a || b < a ? b : a, null); }
+  function asDate(value) { return value == null || value === '' ? null : (parseDate(value), value); }
+  function nonneg(value, label) { if (!Number.isInteger(value) || value < 0) throw new Error(label + '必须为非负整数'); return value; }
+
+  // Graph convention: each step occupies 1+ full calendar dates, a successor starts the next day.
+  // A terminal step must finish by production-ready deadline. Milestones shipping/receipt are separate.
+  function plan(req) {
+    if (!req || typeof req !== 'object') throw new Error('缺少排程输入');
+    const now = asDate(req.today), receipt = asDate(req.receiptDeadline);
+    if (!now || !receipt) throw new Error('需要今天和收货 DDL');
+    const transit = nonneg(req.transitDays, '运输提前天数');
+    const buffer = nonneg(req.handoffBufferDays, '寄出前缓冲天数');
+    const latestDispatch = addDate(receipt, -transit);
+    const latestProductReady = addDate(latestDispatch, -buffer);
+    const steps = req.steps || [];
+    if (!Array.isArray(steps)) throw new Error('工序需要数组');
+    const byId = new Map(), succ = new Map(), indegree = new Map();
+    for (const s of steps) {
+      if (!s || typeof s.id !== 'string' || !s.id.trim() || byId.has(s.id)) throw new Error('工序 ID 为空或重复');
+      if (!Number.isInteger(s.days) || s.days < 1) throw new Error('工序预计工期至少一天: ' + s.id);
+      if (s.predecessors && !Array.isArray(s.predecessors)) throw new Error('前置工序必须是数组');
+      for (const k of ['actualFinished', 'promisedDelivery', 'dueBy']) asDate(s[k]);
+      byId.set(s.id, s); succ.set(s.id, []); indegree.set(s.id, 0);
+    }
+    for (const s of steps) {
+      const seen = new Set();
+      for (const p of (s.predecessors || [])) {
+        if (!byId.has(p) || p === s.id || seen.has(p)) throw new Error('未知/重复/自引用依赖: ' + s.id + ' → ' + p);
+        seen.add(p); succ.get(p).push(s.id); indegree.set(s.id, indegree.get(s.id) + 1);
+      }
+    }
+    const order = [], ready = steps.filter(s => !indegree.get(s.id)).map(s => s.id);
+    for (let i = 0; i < ready.length; i++) {
+      const id = ready[i]; order.push(id);
+      for (const child of succ.get(id)) {
+        indegree.set(child, indegree.get(child) - 1);
+        if (!indegree.get(child)) ready.push(child);
+      }
+    }
+    if (order.length !== steps.length) throw new Error('工序依赖中存在循环');
+    const rows = Object.create(null), diagnostics = [];
+    const emit = (type, stepId, detail = {}) => diagnostics.push({type, stepId, ...detail});
+
+    // Reverse pass — completed steps must NOT be filtered out.
+    for (const id of [...order].reverse()) {
+      const s = byId.get(id);
+      let latest = succ.get(id).length
+        ? minDate(...succ.get(id).map(child => addDate(rows[child].latestStart, -1)))
+        : latestProductReady;
+      if (s.dueBy) latest = minDate(latest, s.dueBy);
+      const start = addDate(latest, -s.days + 1);
+      rows[id] = {
+        id, latestStart: start, latestFinish: latest, forecastStart: null,
+        forecastFinish: null, actualFinished: s.actualFinished || null,
+        completed: !!s.completed, forecastConfidence: 'none', slackDays: null,
+        latestProvisional: !!s.durationProvisional || succ.get(id).some(child => rows[child].latestProvisional)
+      };
+      if (s.promisedDelivery && s.promisedDelivery > latest)
+        emit('promise_after_latest', id, {days: daysBetween(latest, s.promisedDelivery), promised: s.promisedDelivery, latest});
+    }
+
+    // Forward pass — if completion time is missing, block downstream instead of pretending it finished today.
+    for (const id of order) {
+      const s = byId.get(id), row = rows[id];
+      if (s.completed) {
+        row.forecastFinish = s.actualFinished || null;
+        row.forecastConfidence = s.actualFinished ? 'actual' : 'unknown';
+        if (!s.actualFinished) emit('missing_actual_date', id);
+        else if (s.actualFinished > row.latestFinish)
+          emit('historically_late', id, {days: daysBetween(row.latestFinish, s.actualFinished)});
+        if (s.actualFinished) for (const pred of s.predecessors || []) {
+          const p = byId.get(pred), r = rows[pred];
+          if (!p.completed) emit('completed_before_predecessor', id, {predecessorId: pred});
+          else if (r.actualFinished && s.actualFinished <= r.actualFinished)
+            emit('actual_order_conflict', id, {predecessorId: pred});
+        }
+        continue;
+      }
+      if (s.promisedDelivery && s.promisedDelivery < now)
+        emit('overdue_promise', id, {days: daysBetween(s.promisedDelivery, now), promised: s.promisedDelivery});
+      const predecessors = (s.predecessors || []).map(p => rows[p]);
+      if (predecessors.some(p => !p.forecastFinish)) {
+        row.forecastConfidence = 'blocked';
+        emit('blocked_by_unknown_predecessor', id, {predecessorIds: (s.predecessors || []).filter(p => !rows[p].forecastFinish)});
+        continue;
+      }
+      const earliest = maxDate(now, ...predecessors.map(p => addDate(p.forecastFinish, 1)));
+      const minExpected = addDate(earliest, s.days - 1);
+      const forecast = s.promisedDelivery && s.promisedDelivery >= now
+        ? maxDate(minExpected, s.promisedDelivery) : minExpected;
+      row.forecastStart = earliest; row.forecastFinish = forecast;
+      row.forecastConfidence = s.durationProvisional ? 'provisional' : 'estimated';
+      row.slackDays = daysBetween(forecast, row.latestFinish);
+      if (forecast > row.latestFinish) emit('predicted_late', id, {days: daysBetween(row.latestFinish, forecast)});
+      if (s.durationProvisional) emit('unquantified_duration', id);
+    }
+    const actualDispatch = asDate(req.actualDispatch), actualReceipt = asDate(req.actualReceipt);
+    if (actualDispatch) {
+      if (actualDispatch > latestDispatch) emit('late_dispatch', null, {days: daysBetween(latestDispatch, actualDispatch)});
+      if (steps.some(s => !s.completed)) emit('dispatched_with_incomplete_steps', null, {stepIds: steps.filter(s => !s.completed).map(s => s.id)});
+      if (steps.some(s => s.completed && !s.actualFinished)) emit('dispatched_with_unknown_dates', null);
+    }
+    if (actualReceipt && actualReceipt > receipt) emit('late_receipt', null, {days: daysBetween(receipt, actualReceipt)});
+    if (actualReceipt && !actualDispatch) emit('received_without_dispatch', null);
+    return {
+      today: now, receiptDeadline: receipt, latestDispatch, latestProductReady,
+      predictedReceiptFromDispatch: actualDispatch ? addDate(actualDispatch, transit) : null,
+      rows, order, diagnostics
+    };
+  }
+
+  // Integer micro-units make even fractional P quantities sum exactly; partial pages use quantum=0.5.
+  function allocateQuantity({total, initialDone = 0, logs = [], unit = 1, start, finish, excludedDates = []}) {
+    if (!(unit > 0) || !Number.isFinite(unit) || !Number.isFinite(total) || !Number.isFinite(initialDone)) throw new Error('非法工作量');
+    const toTicks = (v) => {const n=v / unit; if (Math.abs(n-Math.round(n)) > 1e-7) throw new Error('数量不是最小单位的整数倍');return Math.round(n);};
+    let done = toTicks(initialDone);
+    if (done < 0) throw new Error('初始完成量不能为负');
+    for (const x of logs) if (!x.voided && !x.deleted) done += toTicks(Number(x.amount || 0));
+    if (done < 0) throw new Error('累计完成量不能为负');
+    const target = toTicks(total), left = Math.max(0, target - done);
+    const dates = [];
+    const excluded = new Set(excludedDates);
+    if (daysBetween(start, finish) >= 0) for (let d = start; d <= finish; d = addDate(d, 1)) {
+      if (!excluded.has(d)) dates.push(d);
+    }
+    const quotas = {};
+    dates.forEach((date, i) => quotas[date] = (Math.floor((i+1)*left/dates.length)-Math.floor(i*left/dates.length))*unit);
+    const planned = Object.values(quotas).reduce((a,b)=>a+b,0);
+    return {target:target*unit, done:done*unit, remaining:left*unit, overTarget:Math.max(0,(done-target)*unit),
+      quotas, unscheduled:left>0 && !dates.length ? left*unit : 0,
+      conserved:Math.abs(planned - (left && dates.length?left*unit:0)) < 1e-7};
+  }
+
+  return Object.freeze({plan, allocateQuantity, addDate, daysBetween});
+});
+
+/* Read-only adapter: v0.3.1 localStorage JSON -> proposed P0 DAG.
+   No guessed completion timestamps and no automatic migration/write-back. */
+(function(root, build) {
+  const core = typeof module === 'object' && module.exports ? require('./scheduler.js') : root.FandomSchedulerP0;
+  const api = build(core);
+  if (typeof module === 'object' && module.exports) module.exports = api;
+  if (root) root.FandomLegacyAdapterP0 = api;
+})(typeof globalThis !== 'undefined' ? globalThis : this, function(core) {
+  'use strict';
+  if (!core) throw new Error('需要先载入 scheduler.js');
+  const validDate = value => typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value) && (()=>{try{core.daysBetween(value,value);return true;}catch{return false;}})();
+  const shippingStep = s => s?.purpose === 'shipping' || (s?.kind === 'external' && /^(运输|快递运输|物流运输)$/.test(s.name || ''));
+  function migratePreview({product, event, logs = [], today}) {
+    if (!product || !event || !validDate(event.ddl)) throw new Error('制品必须关联含有效收货 DDL 的活动');
+    if (!Array.isArray(product.tracks) || !Array.isArray(product.shared)) throw new Error('旧版制品结构不完整');
+    const warnings = [], meta = Object.create(null), steps = [];
+    const allLogs = logs.filter(l => l.productId === product.id);
+    const production = product.shared.slice();
+    const shipIndices = production.map((s,i)=>shippingStep(s)?i:-1).filter(i=>i>=0);
+    let ship = null;
+    if (shipIndices.length === 1 && shipIndices[0] === production.length-1) {
+      ship = production.pop();
+    } else if (shipIndices.length) {
+      throw new Error('运输工序需要恰好一条且为下印流程末项；请人工修复，不能自动猜');
+    } else warnings.push({type:'missing_shipping',message:'旧数据未提供运输工序；暂按运输 0 天演示，必须由主催确认。'});
+    const transit = ship ? Math.max(0, Math.round(Number(ship.days)||0)) : 0;
+    const buffer = Number.isInteger(product.handoffBufferDays) && product.handoffBufferDays>=0 ? product.handoffBufferDays : 1;
+    if (product.handoffBufferDays === undefined) warnings.push({type:'inferred_buffer',message:'旧版采用隐含交接缓冲；此处暂按 1 天演示，正式迁移须确认。'});
+
+    const completionFor = (s) => {
+      const related = allLogs.filter(l=>l.stepId===s.id && !l.deleted && !l.voided).sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+      const isPiece = !!s.pieceStage && Array.isArray(product.pieces);
+      const initial = Number(s.done)||0;
+      const written = related.reduce((sum,l)=>sum+(Number(l.amount)||0),0);
+      const finishedCount = isPiece ? product.pieces.filter(piece=>!!piece[s.pieceStage]).length : Math.max(0,initial+written);
+      const completed = !!s.completed || (s.kind==='quantity' && Number(s.total)>0 && finishedCount >= Number(s.total));
+      let at = validDate(s.completedAt) ? s.completedAt : null;
+      if (!at && s.completedAt) warnings.push({type:'bad_completion_date',stepId:s.id,message:'旧环节实际完成日无效，不会采用'});
+      if (!at && !isPiece) {
+        const marked = related.filter(l=>l.completedByLog && validDate(l.date));
+        if (marked.length) at=marked[marked.length-1].date;
+      }
+      // Quantity completion from persisted logs is inferable only if initialDone is below goal
+      // and valid logs can prove the threshold-crossing date. Never infer from piece booleans.
+      if (!at && !isPiece && completed && s.kind === 'quantity' && initial < Number(s.total)) {
+        let count = initial;
+        for(const log of related){count += Number(log.amount)||0;if(count>=Number(s.total)&&validDate(log.date)){at=log.date;break;}}
+      }
+      if (completed && !at) warnings.push({type:'unknown_actual',stepId:s.id,message:'工序标记完成但无法证明实际完成日期；保留为未知'});
+      return {completed,actualFinished:completed?at:null,finishedCount};
+    };
+    const addStep=(s,predecessors,area,track)=>{
+      if(!s.id || meta[s.id])throw new Error('工序 ID 无效或重复: '+s.id);
+      const c=completionFor(s);
+      // An unconfigured quantity workload MUST NOT imply it can truly finish in one day.
+      // The one-day placeholder is explicitly marked provisional and never treated as a reliable ETA.
+      const duration = s.kind==='quantity'
+        ? (Number.isInteger(s.plannedDays) && s.plannedDays>=1 ? s.plannedDays : 1)
+        : Math.max(1, Math.ceil(Number(s.days)||1));
+      const durationProvisional = s.kind==='quantity' && !(Number.isInteger(s.plannedDays) && s.plannedDays>=1);
+      if(durationProvisional)warnings.push({type:'quantity_duration_unknown',stepId:s.id,message:'旧数据缺少稳定的数量型工期；先用一日技术占位，禁止直接作为可靠预测'});
+      steps.push({id:s.id,days:duration,predecessors:[...predecessors],completed:c.completed,
+        actualFinished:c.actualFinished, promisedDelivery:validDate(s.promisedDelivery)?s.promisedDelivery:null,
+        dueBy:validDate(s.dueBy)?s.dueBy:null,durationProvisional});
+      meta[s.id]={productId:product.id,stepName:s.name,area,trackId:track?.id||null,
+        owner:track?.owner||null,isMine:typeof s.isMine==='boolean'?s.isMine:(typeof track?.isMine==='boolean'?track.isMine:track?.owner==='主催'),
+        durationProvisional,originalKind:s.kind,completed:c.completed,completedCount:c.finishedCount,
+        target:Number(s.total)||0};
+    };
+    const ends = [];
+    for(const track of product.tracks){
+      let predecessor=[];
+      for(const s of (track.steps||[])){
+        addStep(s,predecessor,'track',track);predecessor=[s.id];
+      }
+      if(predecessor.length)ends.push(predecessor[0]);
+    }
+    let predecessor=ends;
+    for(const s of production){addStep(s,predecessor,'production',null);predecessor=[s.id];}
+    if(!production.length && !ends.length)warnings.push({type:'no_steps',message:'制品没有任何工序，无法推算创作时间'});
+    const shipLogs = ship ? allLogs.filter(l=>l.stepId===ship.id && l.completedByLog && validDate(l.date)) : [];
+    const actualDispatch = ship && validDate(ship.completedAt) ? ship.completedAt
+      : shipLogs.length ? shipLogs.sort((a,b)=>a.date.localeCompare(b.date)).at(-1).date:null;
+    if (ship?.completed && !actualDispatch) warnings.push({type:'unknown_dispatch_date',message:'旧版标记为已寄出，但缺少实际寄出日期'});
+    const input={today,receiptDeadline:event.ddl,transitDays:transit,handoffBufferDays:buffer,
+      steps,actualDispatch,actualReceipt:validDate(product.actualReceipt)?product.actualReceipt:null};
+    return {input,meta,warnings};
+  }
+  function previewAll(raw, today) {
+    const d = raw && raw.data && Array.isArray(raw.data.products) ? raw.data : raw;
+    if(!d || !Array.isArray(d.events) || !Array.isArray(d.products) || !Array.isArray(d.logs))throw new Error('不是有效的旧版纸上赶稿备份');
+    const results=[];
+    for(const p of d.products){
+      const e=d.events.find(e=>e.id===p.eventId);
+      try{
+        const converted=migratePreview({product:p,event:e,logs:d.logs,today});
+        results.push({productId:p.id,title:p.title,preview:converted,plan:core.plan(converted.input)});
+      }catch(err){results.push({productId:p.id,title:p.title,error:String(err.message||err)});}
+    }
+    return results;
+  }
+  return Object.freeze({migratePreview,previewAll});
+});
+
+/* 纸上赶稿 v0.4 - bridge from v0.3.1 data to P0 dual-pass schedule.
+   Pure, read-only: estimates flexible durations without mutating source records. */
+(function(root,build){
+ const api=build(typeof module==='object'&&module.exports?require('./scheduler.js'):root.FandomSchedulerP0,
+                 typeof module==='object'&&module.exports?require('./legacy_adapter.js'):root.FandomLegacyAdapterP0);
+ if(typeof module==='object'&&module.exports)module.exports=api;
+ if(root)root.FandomP0Bridge=api;
+})(typeof globalThis!=='undefined'?globalThis:this,function(core,adapter){
+ 'use strict';
+ function compute({product,event,logs=[],today}){
+   const copy=JSON.parse(JSON.stringify(product));
+   // For an active revision, forecast against the latest promised redo date; source promise/history remains unchanged.
+   for(const st of [...(copy.tracks||[]).flatMap(t=>t.steps||[]),...(copy.shared||[])]){const rev=Array.isArray(st.revisions)?st.revisions.at(-1):null;if(rev?.dueDate&&!st.completed)st.promisedDelivery=rev.dueDate;}
+   const reminders=[];
+   const prod=copy.shared||[];
+   const ship=prod.at(-1);
+   const isShip=ship&&(ship.purpose==='shipping'||/^(运输|快递运输|物流运输)$/.test(ship.name||''));
+   const transit=isShip?Math.max(0,Math.round(+ship.days||0)):0;
+   const buffer=Number.isInteger(copy.handoffBufferDays)?copy.handoffBufferDays:1;
+   const end=core.addDate(event.ddl,-transit-buffer);
+   const productionDays=prod.filter(s=>s!==ship||!isShip).reduce((n,s)=>n+Math.max(1,Math.ceil(+s.days||1)),0);
+   const contentDue=core.addDate(end,-productionDays);
+   for(const track of copy.tracks||[]){
+     const incomplete=(track.steps||[]).filter(s=>!s.completed);
+     const quantities=incomplete.filter(s=>s.kind==='quantity'&&!Number.isInteger(s.plannedDays));
+     const rest=incomplete.filter(s=>s.kind!=='quantity'||Number.isInteger(s.plannedDays))
+       .reduce((n,s)=>n+Math.max(1,Math.ceil(+(s.kind==='quantity'?s.plannedDays:s.days)||1)),0);
+     const usable=Math.max(1,core.daysBetween(today,contentDue)+1-rest);
+     const pool=quantities.map(s=>({s, weight:Math.max(1,(Math.max(0,(+s.total||0)-(+s.done||0)))*Math.max(0.01,(+s.unitMinutes||1)))}));
+     const weightSum=pool.reduce((n,x)=>n+x.weight,0);
+     let remainingDays=Math.max(pool.length,usable);
+     const fractions=pool.map(x=>remainingDays*x.weight/weightSum);
+     const assigned=pool.map((x,i)=>Math.max(1,Math.floor(fractions[i])));
+     let remainder=Math.max(0,remainingDays-assigned.reduce((a,b)=>a+b,0));
+     const sorted=pool.map((_,i)=>i).sort((a,b)=>(fractions[b]-Math.floor(fractions[b]))-(fractions[a]-Math.floor(fractions[a])));
+     for(let j=0;j<remainder;j++) assigned[sorted[j%sorted.length]]++;
+     pool.forEach(({s},i)=>{s.plannedDays=assigned[i];reminders.push({type:'auto_duration',stepId:s.id,days:assigned[i],message:'缺少人工预计工期：用当前剩余时间临时分配，不作为确定工期'});});
+   }
+   const converted=adapter.migratePreview({product:copy,event,logs,today});
+   for(const x of reminders){const row=converted.input.steps.find(s=>s.id===x.stepId);if(row)row.durationProvisional=true;converted.warnings.push(x);}
+   const result=core.plan(converted.input);
+   return {input:converted.input,meta:converted.meta,warnings:converted.warnings,plan:result,contentDue};
+ }
+ function baselineFor(product,event,logs,today){
+   const result=compute({product,event,logs,today});
+   const dates={};for(const id of result.plan.order)dates[id]={latestStart:result.plan.rows[id].latestStart,latestFinish:result.plan.rows[id].latestFinish};
+   return {version:1,createdAt:new Date().toISOString(),anchorDay:today,eventDDL:event.ddl,latestDispatch:result.plan.latestDispatch,dates,
+     hasProvisional:result.warnings.some(w=>w.type==='auto_duration'||w.type==='quantity_duration_unknown')};
+ }
+ return Object.freeze({compute,baselineFor});
+});
+
+/* 纸上赶稿 P1：独立催稿状态、提醒与交付历史（纯逻辑，不操作 DOM）。 */
+(function (root, factory) {
+  const api = factory();
+  if (typeof module === 'object' && module.exports) module.exports = api;
+  if (root) root.FandomFollowUpP1 = api;
+})(typeof globalThis !== 'undefined' ? globalThis : this, function () {
+  'use strict';
+  const statuses = Object.freeze(['pending','submitted','revision','accepted']);
+  const localDay = (value) => /^\d{4}-\d{2}-\d{2}$/.test(value || '');
+  function addDays(iso, n) {
+    if (!localDay(iso)) return null;
+    const [y,m,d] = iso.split('-').map(Number);
+    const date = new Date(Date.UTC(y,m-1,d+n));
+    return date.toISOString().slice(0,10);
+  }
+  function statusOf(step) {
+    if (step.completed) return 'accepted';
+    const s = step.deliveryStatus;
+    return statuses.includes(s) && s !== 'accepted' ? s : 'pending';
+  }
+  function currentRevision(step) {
+    const a = Array.isArray(step.revisions) ? step.revisions : [];
+    return a.length ? a[a.length-1] : null;
+  }
+  function targetDate(step, calculated, shipping = false) {
+    if (shipping) return calculated || null;
+    const active = currentRevision(step);
+    return (active && active.dueDate) || step.promisedDelivery || calculated || null;
+  }
+  function targetKey(step, date) {
+    return `${currentRevision(step)?.id || 'base'}|${date || 'unknown'}`;
+  }
+  function contacted(step, date) {
+    const key = targetKey(step,date);
+    return (step.contactHistory || []).some(entry => entry.targetKey === key);
+  }
+  function stateFor(step, calculatedDate, today, shipping=false) {
+    const status = statusOf(step);
+    const date = targetDate(step,calculatedDate,shipping);
+    const remindDays = Math.max(0,Math.floor(Number(step.remindDays ?? 7) || 0));
+    const reminderDate = remindDays > 0 && date ? addDays(date,-remindDays) : null;
+    const hasContact = !!date && contacted(step,date);
+    let bucket = null;
+    if (status !== 'accepted') {
+      if (status === 'submitted') bucket = 'review';
+      else if (date && today > date) bucket = 'overdue';
+      else if (date && today === date) bucket = 'due';
+      else if (status === 'revision' && date && reminderDate && today >= reminderDate && !hasContact) bucket = 'revision';
+      else if (reminderDate && today >= reminderDate && !hasContact) bucket = 'contact';
+    }
+    return {status, date, reminderDate, remindDays, hasContact, bucket, targetKey:targetKey(step,date),
+      actionable: !!bucket, severity:bucket==='overdue'?'critical':bucket==='due'?'important':'normal'};
+  }
+  function recordContact(step, at, note='', id='', calculatedDate=null, shipping=false) {
+    if (!localDay(at)) throw Error('联系日期无效');
+    const target = targetDate(step,calculatedDate,shipping);
+    if (!target) throw Error('尚无有效交稿日期');
+    const row = {id:id||'contact-'+Date.now(),date:at,targetKey:targetKey(step,target),targetDate:target,note};
+    (step.contactHistory ||= []).push(row);
+    return row;
+  }
+  function updateDelivery(step, next, date, note='', id='') {
+    if (!statuses.includes(next)) throw Error('交付状态无效');
+    const from=statusOf(step);
+    if (from==='accepted' && next!=='accepted') throw Error('已验收的工序必须创建返修节点，不能抹去完成历史');
+    if ((next==='accepted') && date && !localDay(date)) throw Error('验收日期无效');
+    if ((next==='submitted') && date && !localDay(date)) throw Error('提交日期无效');
+    if (next==='accepted') {step.completed=true;step.completedAt=date||step.completedAt||null;}
+    else {step.completed=false;step.completedAt=null;}
+    step.deliveryStatus=next;
+    const entry={id:id||'event-'+Date.now(),type:next,date:date||null,note,previous:from};
+    (step.deliveryHistory ||= []).push(entry);
+    return entry;
+  }
+  function requestRevision(step,{date,dueDate,note='',id=''}) {
+    if (statusOf(step)==='accepted') throw Error('已验收，请创建独立返修工序');
+    if (!localDay(date) || (dueDate && !localDay(dueDate))) throw Error('返修日期无效');
+    const rev={id:id||'revision-'+Date.now(),requestedAt:date,dueDate:dueDate||null,note};
+    (step.revisions ||= []).push(rev);
+    updateDelivery(step,'revision',date,note);
+    return rev;
+  }
+  function followupLabel(bucket) {
+    return ({contact:'待联系',due:'今日交稿',overdue:'交付逾期',review:'待验收',revision:'返修待跟进'})[bucket] || '—';
+  }
+  return Object.freeze({addDays,statusOf,currentRevision,targetDate,targetKey,contacted,stateFor,recordContact,updateDelivery,requestRevision,followupLabel});
+});
+
+
+'use strict';
+const STORAGE='zhishang-fandom-ddl-v08-new';
+const TYPE_NAMES={novel:'文本',comic:'漫本',anthology:'合志',artbook:'图集',goods:'周边'};
+const TYPE_ICONS={novel:'文',comic:'漫',anthology:'合',artbook:'绘',goods:'物'};
+const PIECE_PHASES=[['sketch','草稿'],['color','上色'],['refine','细化']];
+const todayISO=()=>{const d=new Date();return dateISO(d)};
+function dateISO(d){return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')}
+function parseDay(s){const [y,m,d]=(s||todayISO()).split('-').map(Number);return new Date(y,m-1,d,12)}
+function addDay(s,n){const d=parseDay(s);d.setDate(d.getDate()+n);return dateISO(d)}
+function dayDiff(a,b){return Math.round((parseDay(b)-parseDay(a))/86400000)}
+function fmtDay(s){if(!s)return '—';const [,m,d]=s.split('-');return `${+m}月${+d}日`}
+function fmtSpan(a,b){return a===b?fmtDay(a):`${fmtDay(a)}—${fmtDay(b)}`}
+function uuid(){return 'i'+Math.random().toString(36).slice(2,10)}
+function safe(t){return String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function nval(x,f=0){const n=Number(x);return Number.isFinite(n)?n:f}
+function cleanN(n,d=1){return Number(n.toFixed(d)).toLocaleString('zh-CN',{maximumFractionDigits:d})}
+function formatHours(min){if(min==null||min<=0)return '未设';if(min<60)return cleanN(min,0)+' 分钟';return cleanN(min/60,1)+' 小时'}
+function formatDuration(s){const ms=Math.max(0,s||0);const sec=Math.floor(ms/1000),h=Math.floor(sec/3600),m=Math.floor(sec%3600/60),ss=sec%60;return [h,m,ss].map(x=>String(x).padStart(2,'0')).join(':')}
+function dateFriendly(s){return `${s.slice(0,4)} 年 ${+s.slice(5,7)} 月 ${+s.slice(8,10)} 日`}
+function escAttr(s){return safe(s)}
+function icon(name){const paths={calendar:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/>',file:'<path d="M7 3h7l5 5v13H5V3z"/><path d="M14 3v6h5M8 13h8M8 17h8"/>',flag:'<path d="M5 21V4m0 1c6-4 8 4 15 0v11c-7 4-9-4-15 0"/>',plus:'<path d="M12 5v14M5 12h14"/>',settings:'<path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/><circle cx="12" cy="12" r="4"/>',chevLeft:'<path d="m15 18-6-6 6-6"/>',chevRight:'<path d="m9 18 6-6-6-6"/>',play:'<path d="m8 5 11 7-11 7z"/>',pause:'<path d="M9 5v14M15 5v14"/>',check:'<path d="m5 12 4 4L19 6"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l4 3"/>',box:'<path d="m3 7 9-4 9 4-9 4zM3 7v10l9 4 9-4V7M12 11v10"/>',download:'<path d="M12 3v12m-5-5 5 5 5-5M4 17v4h16v-4"/>',edit:'<path d="m4 20 5-.8L20 8l-4-4L5 15z"/>',trash:'<path d="M5 6h14M9 6V4h6v2m3 0-1 15H7L6 6M10 10v7m4-7v7"/>',alert:'<path d="m12 3 10 18H2zM12 9v5m0 4h.01"/>',arrow:'<path d="M4 12h16m-6-6 6 6-6 6"/>'};return `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name]||paths.file}</svg>`}
+function mkStep(name,kind='fixed',extra={}){return {id:uuid(),name,kind,days:2,total:0,done:0,unit:'',unitMinutes:null,completed:false,pieceStage:null,remindDays:7,nodeColor:'blue',remindColor:'yellow',...extra}}
+function isShippingStep(s){return s?.purpose==='shipping'||(s?.kind==='external'&&/^(运输|快递运输|物流运输)$/.test(s?.name||''))}
+function mkTrack(name,owner,steps){return {id:uuid(),name,owner,isMine:owner==='主催',steps}}
+function participantSteps(type){return type==='text'?[mkStep('大纲','fixed',{days:2}),mkStep('正文','quantity',{total:10000,unit:'字',unitMinutes:.06})]:type==='illustration'?[mkStep('草稿','fixed',{days:2}),mkStep('上色','fixed',{days:3}),mkStep('成图','fixed',{days:2})]:type==='cover'?[mkStep('封面约稿','external',{days:10}),mkStep('美工','fixed',{days:2})]:[]}
+function mkTemplate(type,count,owner='主催'){
+ const n=Math.max(1,type==='artbook'?Math.min(100,Number(count)||8):Number(count)||8);
+ const shared=type==='novel'?[
+ mkStep('排版', 'fixed',{days:2}),mkStep('印厂对接','fixed',{days:2}),mkStep('打样','external',{days:5}),mkStep('大货生产','external',{days:7}),mkStep('运输','external',{days:3,purpose:'shipping'})
+ ]: type==='goods'?[
+ mkStep('印厂对接','fixed',{days:2}),mkStep('拼车等待','external',{days:5}),mkStep('打样','external',{days:5}),mkStep('大货生产','external',{days:7}),mkStep('运输','external',{days:3,purpose:'shipping'})
+ ]:[mkStep('印厂对接','fixed',{days:2}),mkStep('打样','external',{days:5}),mkStep('大货生产','external',{days:7}),mkStep('运输','external',{days:3,purpose:'shipping'})];
+ let tracks=[],pieces=[];
+ if(type==='novel')tracks=[mkTrack('正文制作',owner,[mkStep('大纲','fixed',{days:2}),mkStep('正文','quantity',{total:n,unit:'字',unitMinutes:.06}),mkStep('校对','fixed',{days:2})]),mkTrack('封面制作','封面画师',[mkStep('封设约稿','external',{days:10}),mkStep('美工','fixed',{days:2})])];
+ if(type==='comic')tracks=[mkTrack('漫画制作',owner,[mkStep('脚本','fixed',{days:3}),mkStep('分镜','quantity',{total:n,unit:'P',unitMinutes:60}),mkStep('漫画正稿','quantity',{total:n,unit:'P',unitMinutes:240})]),mkTrack('封面设计','封面画师',[mkStep('封面设计','external',{days:5})])];
+ if(type==='anthology')tracks=Array.from({length:Math.min(60,Math.max(1,n))},(_,i)=>{const name=i===1?'画师B':`作者${String.fromCharCode(65+i)}`;const category=i===1?'illustration':'text';const steps=category==='text'?[mkStep('大纲','fixed',{days:2}),mkStep('正文','quantity',{total:10000,unit:'字',unitMinutes:.06})]:[mkStep('草稿','fixed',{days:2}),mkStep('上色','fixed',{days:3}),mkStep('成图','fixed',{days:2})];return {...mkTrack(`${category==='text'?'文本内容':'绘图内容'}-${name}`,name,steps),category};});
+ if(type==='artbook'){
+ pieces=Array.from({length:n},(_,i)=>({id:uuid(),name:`插画 ${String(i+1).padStart(2,'0')}`,sketch:false,color:false,refine:false}));
+ tracks=[mkTrack('插画制作',owner,[mkStep('草稿','quantity',{total:n,unit:'张',unitMinutes:60,pieceStage:'sketch'}),mkStep('上色','quantity',{total:n,unit:'张',unitMinutes:150,pieceStage:'color'}),mkStep('细化','quantity',{total:n,unit:'张',unitMinutes:90,pieceStage:'refine'})])];
+ }
+ if(type==='goods'){
+ pieces=[{id:uuid(),name:'制品设计稿',sketch:false,color:false,refine:false}];
+ tracks=[mkTrack('图稿制作',owner,[mkStep('草稿','quantity',{total:1,unit:'张',unitMinutes:60,pieceStage:'sketch'}),mkStep('上色','quantity',{total:1,unit:'张',unitMinutes:150,pieceStage:'color'}),mkStep('细化','quantity',{total:1,unit:'张',unitMinutes:90,pieceStage:'refine'})])];
+ }
+ return {tracks,shared,pieces};
+}
+let data;
+try{data=JSON.parse(localStorage.getItem(STORAGE)||'null')}catch(e){data=null}
+if(!data||!Array.isArray(data.events)||!Array.isArray(data.products)||!Array.isArray(data.logs))data={events:[],products:[],logs:[],baselines:{}};
+if(!data.baselines||typeof data.baselines!=='object')data.baselines={};if(!data.schemaVersion)data.schemaVersion=4;
+// 兼容 v0.1/v0.2 的本地备份与旧数据；不会更改旧进度。
+function normalizeData(){for(const p of data.products){for(const t of p.tracks||[]){if(typeof t.isMine!=='boolean')t.isMine=t.owner==='主催';for(const step of t.steps||[])normalizeStep(step)}for(const step of p.shared||[])normalizeStep(step)}}
+function normalizeStep(s){if(s.remindDays===undefined)s.remindDays=7;if(!s.nodeColor)s.nodeColor='blue';if(!s.remindColor)s.remindColor='yellow';if(!Array.isArray(s.contactHistory))s.contactHistory=[];if(!Array.isArray(s.deliveryHistory))s.deliveryHistory=[];if(!Array.isArray(s.revisions))s.revisions=[];}
+normalizeData();
+const ui={view:'calendar',month:new Date(),selectedDate:todayISO(),selectedProduct:null,selectedEvent:null,modal:null,context:null,calendarMode:'all',expandedTracks:new Set(),manageTracks:new Set(),manageProduction:false,showPieces:false,showAllFollowups:false,mobileMode:window.innerWidth<=860?'week':'month'};
+function persist(){localStorage.setItem(STORAGE,JSON.stringify(data))}
+function notify(t){const x=document.getElementById('toast-root');x.innerHTML=`<div class="toast">${safe(t)}</div>`;clearTimeout(notify.timer);notify.timer=setTimeout(()=>x.innerHTML='',2800)}
+function eventBy(id){return data.events.find(e=>e.id===id)}
+function productBy(id){return data.products.find(e=>e.id===id)}
+function stepBy(id){for(const p of data.products){for(const t of p.tracks){const s=t.steps.find(s=>s.id===id);if(s)return {p,t,s,shared:false}}const s=p.shared.find(s=>s.id===id);if(s)return {p,t:null,s,shared:true}}return null}
+function sumLogged(stepId,field='amount'){return data.logs.filter(x=>x.stepId===stepId).reduce((a,x)=>a+nval(x[field]),0)}
+function pieceStageLogDate(p,pieceId,phase){
+ const ids=new Set(p.tracks.flatMap(t=>t.steps.filter(st=>st.pieceStage===phase).map(st=>st.id)));
+ const matching=data.logs.filter(l=>l.productId===p.id&&ids.has(l.stepId)&&(l.pieceIds||[]).includes(pieceId)&&!l.deleted&&!l.voided);
+ return matching.map(l=>l.date).filter(Boolean).sort().at(-1)||null;
+}
+function pieceEffectiveDate(p,piece,phase){
+ const manual=piece.manualPhases?.[phase]||null;
+ const logged=pieceStageLogDate(p,piece.id,phase);
+ return [manual,logged].filter(Boolean).sort().at(-1)||null;
+}
+// One source of truth: explicit manual confirmation and valid log allocations.
+// A deleted log cannot erase a later manual confirmation.
+function syncPieceProgress(p){
+ if(!Array.isArray(p.pieces))return;
+ for(const piece of p.pieces)for(const phase of ['sketch','color','refine'])piece[phase]=!!pieceEffectiveDate(p,piece,phase);
+ for(const st of p.tracks.flatMap(t=>t.steps).filter(st=>st.pieceStage)){
+  st.total=p.pieces.length;
+  const dates=p.pieces.map(piece=>pieceEffectiveDate(p,piece,st.pieceStage));
+  st.completed=false; // quantity completion is derived from all pieces, never from a global checkbox
+  st.completedAt=dates.length>0&&dates.every(Boolean)?dates.sort().at(-1):null;
+ }
+}
+function stepDone(p,s){if(s.pieceStage&&Array.isArray(p.pieces))return p.pieces.filter(x=>x[s.pieceStage]).length;return Math.max(0,nval(s.done)+sumLogged(s.id))}
+function doneStep(p,s){return !!s.completed || (s.kind==='quantity'&&stepDone(p,s)>=nval(s.total))}
+function remaining(p,s){return Math.max(0,nval(s.total)-stepDone(p,s))}
+function stepRateText(s){if(!nval(s.unitMinutes))return '';const base=s.unit==='字'?1000:1;return `${formatHours(nval(s.unitMinutes)*base)} / ${base===1000?'1000':''}${s.unit||'单位'}`}
+function daysOf(a,b){return dayDiff(a,b)+1}
+function allocateDays(total,weights){const n=weights.length;if(!n)return [];const min=total>=n?1:0;const alloc=Array(n).fill(min);let left=Math.max(0,total-n*min);const w=weights.map(x=>Math.max(.001,x));const sum=w.reduce((a,b)=>a+b,0);const remainders=w.map(x=>left*x/sum);const base=remainders.map(Math.floor);let allocated=base.reduce((a,b)=>a+b,0);for(let i=0;i<n;i++)alloc[i]+=base[i];for(const i of remainders.map((v,i)=>({i,r:v-base[i]})).sort((a,b)=>b.r-a.r).map(x=>x.i)){if(allocated>=left)break;alloc[i]++;allocated++}return alloc}
+function p0Compute(p,now=todayISO()){
+ const event=eventBy(p.eventId);if(!event)return null;
+ return FandomP0Bridge.compute({product:p,event,logs:data.logs,today:now});
+}
+function scheduleProduct(p,now=todayISO()){
+ const event=eventBy(p.eventId);
+ if(!event)return {event:null,shared:[],tracks:[],risk:['尚未关联参展活动'],cards:[],p0:null};
+ let r;try{r=p0Compute(p,now)}catch(err){return {event,deadline:event.ddl,shared:[],tracks:[],cards:[],risk:['无法计算排程：'+err.message],p0:null}}
+ const d=r.plan, cards=[],risk=[];
+ const warningType={missing_actual_date:'已完成但缺少实际完成日',blocked_by_unknown_predecessor:'前置完成日期未知，当前预测受阻',promise_after_latest:'承诺交稿晚于最晚允许日',predicted_late:'按当前进度预计逾期',overdue_promise:'约定交稿日期已过，尚未验收',historically_late:'实际完成晚于要求',completed_before_predecessor:'后续已完成但前置尚未完成',actual_order_conflict:'实际日期顺序冲突',late_dispatch:'实际寄出晚于最晚寄出',dispatched_with_incomplete_steps:'已寄出但生产工序仍未完成',unquantified_duration:'数量任务使用临时预计工期',missing_shipping:'未设置物流工期'};
+ for(const x of d.diagnostics){const label=warningType[x.type]||x.type;const ref=x.stepId?stepBy(x.stepId):null;risk.push((ref?.s?.name?ref.s.name+'：':'')+label+(x.days?' '+x.days+' 天':''));}
+ for(const w of r.warnings)if(['missing_shipping','unknown_dispatch_date','unknown_actual','inferred_buffer'].includes(w.type))risk.push(w.message);
+ if(r.warnings.some(w=>w.type==='auto_duration'))risk.push('存在未填写预计工期的数量任务，已临时分配天数，请核对');
+ const trackRows=p.tracks.map(track=>{
+   const list=track.steps.map(step=>{
+     const row=d.rows[step.id];if(!row)return null;
+     const complete=doneStep(p,step),end=row.latestFinish,start=row.latestStart;
+     if(!complete&&isMineStep(track,step)&&step.kind==='quantity'){
+       const first=row.forecastStart&&row.forecastStart>now?row.forecastStart:now;
+       const begin=first>start?first:start;
+       const quantity=stepDone(p,step),total=nval(step.total);
+       if(begin<=end&&total>quantity){
+         try{
+           const unit=step.unit==='字'||step.pieceStage?1:0.5;
+           const allocated=FandomSchedulerP0.allocateQuantity({total,initialDone:quantity,unit,start:begin,finish:end});
+           for(const [date,amount] of Object.entries(allocated.quotas))if(amount>0)cards.push({date,product:p,step,track,kind:'quantity',title:step.name,target:`${cleanN(amount)} ${step.unit||'单位'}`,plan:amount,provisional:row.latestProvisional});
+         }catch(ex){risk.push(step.name+'：任务数量格式需检查');}
+       }
+     }else if(!complete&&isMineStep(track,step)&&step.kind==='fixed'){
+       const first=row.forecastStart||now;
+       for(let day=first;day<=end&&day<=addDay(now,120);day=addDay(day,1))cards.push({date:day,product:p,step,track,kind:'fixed',title:step.name,target:'阶段任务',plan:0});
+     }
+     return {step,start,end,days:step.kind==='quantity'?(r.input.steps.find(x=>x.id===step.id)?.days||1):step.days,complete,forecastFinish:row.forecastFinish,forecastConfidence:row.forecastConfidence,actualFinished:row.actualFinished,provisional:row.latestProvisional};
+   }).filter(Boolean);
+   return {track,steps:list,trackDeadline:list.length?list.at(-1).end:null,earliest:list.find(s=>!s.complete)?.start||null};
+ });
+ const shared=p.shared.map(step=>{
+   const shipping=isShippingStep(step);
+   const row=d.rows[step.id];
+   return {step,start:shipping?null:row?.latestStart||null,end:shipping?d.latestDispatch:row?.latestFinish||null,
+           dispatchDate:shipping?d.latestDispatch:null,shipping,complete:doneStep(p,step),
+           forecastFinish:row?.forecastFinish||null,actualFinished:shipping?r.input.actualDispatch:row?.actualFinished||null};
+ });
+ const trackDeadline=r.contentDue;
+ cards.push({date:event.ddl,product:p,step:null,track:null,kind:'deadline',title:'活动收货 DDL',target:fmtDay(event.ddl),plan:0});
+ return {event,deadline:event.ddl,trackDeadline,shared,tracks:trackRows,cards,risk:[...new Set(risk)],p0:r};
+}
+function allSchedules(){return data.products.map(p=>({p,s:scheduleProduct(p)}))}
+function allCards(){const cards=allSchedules().flatMap(x=>x.s.cards);const logByDay=new Map();for(const log of data.logs){const key=`${log.date}|${log.stepId}`;const a=logByDay.get(key)||{amount:0,minutes:0,lastNote:'',completed:false};a.amount+=nval(log.amount);a.minutes+=nval(log.minutes);if(log.note)a.lastNote=log.note;a.completed ||= !!log.completedByLog;logByDay.set(key,a)}for(const c of cards)c.logged=logByDay.get(`${c.date}|${c.step?.id}`)||null;
+ for(const log of data.logs){if(cards.some(c=>c.date===log.date&&c.step?.id===log.stepId))continue;const ref=stepBy(log.stepId);if(!ref)continue;const k=`${log.date}|${log.stepId}`;if(cards.some(c=>c.history===k))continue;const v=logByDay.get(k);cards.push({date:log.date,product:ref.p,step:ref.s,track:ref.t,kind:'historical',title:ref.s.name,target:ref.s.kind==='quantity'?`已完成 ${cleanN(v.amount)} ${ref.s.unit||''}`:(v.lastNote|| (v.completed?'已完成':'已记录')),plan:0,logged:v,history:k})}
+ return cards.sort((a,b)=>a.date.localeCompare(b.date)||Number(a.kind==='historical')-Number(b.kind==='historical'))}
+
+function isMineStep(track,step){if(typeof step?.isMine==='boolean')return step.isMine;if(track)return typeof track.isMine==='boolean'?track.isMine:track.owner==='主催';return step?.kind==='fixed'}
+function entryTone(entry){return entry.kind==='deadline'?'red':entry.kind==='reminder'?entry.remindColor||'yellow':entry.kind==='node'?entry.nodeColor||'blue':'green'}
+function organizerNodes(){
+ const rows=[];
+ for(const {p,s} of allSchedules()){
+  for(const row of [...s.tracks.flatMap(t=>t.steps.map(x=>({...x,track:t.track}))),...s.shared.map(x=>({...x,track:null}))]){
+   if(!row.end&&!row.actualFinished)continue;
+   const st=row.step,shipping=!!row.shipping;
+   // 主催日历追踪外部交付/下印节点；本人创作量留给「我的」。
+   if(row.track&&isMineStep(row.track,st))continue;
+   const f=FandomFollowUpP1.stateFor(st,row.end,todayISO(),shipping);
+   if(row.complete){f.date=row.actualFinished||st.completedAt||row.end;f.actionable=false;f.bucket=null;f.reminderDate=null;}
+   rows.push({p,st,track:row.track,shipping,row,followup:f,history:!!row.complete});
+  }
+ }
+ return rows;
+}
+function pendingFollowups(now=todayISO()){
+ const rows=[];
+ for(const x of organizerNodes()){
+  const state=FandomFollowUpP1.stateFor(x.st,x.row.end,now,x.shipping);
+  if(x.history||!state.actionable)continue;
+  rows.push({...x,followup:state});
+ }
+ const rank={overdue:0,due:1,review:2,revision:3,contact:4};
+ return rows.sort((a,b)=>(rank[a.followup.bucket]??9)-(rank[b.followup.bucket]??9) || (a.followup.date||'').localeCompare(b.followup.date||'') || a.p.title.localeCompare(b.p.title));
+}
+function allCalendarEntries(){
+ const items=[];
+ // All views read from this same event projection; filters never alter scheduling data.
+ for(const {p,s} of allSchedules()){
+  if(!s.deadline)continue;
+  items.push({date:s.deadline,product:p,step:null,track:null,kind:'deadline',title:'收货 DDL',target:'',tone:'red'});
+ }
+ for(const {p,st,track,shipping,row,followup:f} of organizerNodes()){
+  if(!f.date)continue;
+  items.push({date:f.date,product:p,step:st,track,kind:'node',history:!!row.complete,title:shipping?'最晚寄出':st.name,target:shipping?'最晚寄出':f.status==='submitted'?'待验收':f.status==='revision'?'返修交付':'节点',shipping,nodeColor:st.nodeColor||'blue'});
+  if(f.reminderDate && f.status!=='submitted' && !f.hasContact){
+   items.push({date:f.reminderDate,product:p,step:st,track,kind:'reminder',title:st.name,target:`提前 ${f.remindDays} 天`,shipping,remindColor:st.remindColor||'yellow'});
+  }
+ }
+ for(const c of allCards()){
+  if(!c.step || !isMineStep(c.track,c.step))continue;
+  if(!['quantity','fixed','historical'].includes(c.kind))continue;
+  items.push({...c,kind:c.kind==='historical'?'historical':'mine',tone:'green'});
+ }
+ const rank={deadline:0,reminder:1,node:2,mine:3,historical:4};
+ return items.filter(x=>x.date).sort((a,b)=>a.date.localeCompare(b.date)||(rank[a.kind]??9)-(rank[b.kind]??9)||a.product.title.localeCompare(b.product.title));
+}
+
+function calendarEntriesForMode(mode=ui.calendarMode){
+ const all=allCalendarEntries();
+ if(mode==='organizer')return all.filter(x=>['deadline','node','reminder'].includes(x.kind));
+ if(mode==='mine')return all.filter(x=>['mine','historical'].includes(x.kind));
+ return all;
+}
+function calendarFilterButtons(){
+ const names=[['all','全部'],['organizer','主催'],['mine','我的']];
+ return `<div class="calendar-filter" role="group" aria-label="日历内容筛选">${names.map(([v,label])=>`<button type="button" data-action="calendar-filter" data-mode="${v}" aria-pressed="${ui.calendarMode===v}">${label}</button>`).join('')}</div>`;
+}
+function entryText(c){if(c.kind==='deadline')return `${c.product.title} · DDL`;if(c.kind==='reminder')return `${c.product.title} · ${c.shipping?'寄出提醒':c.step.name+'提醒'}`;if(c.kind==='node')return `${c.product.title} · ${c.shipping?'最晚寄出':c.step.name}`;return `${c.product.title} · ${c.step.name}`}
+function entrySub(c){if(c.kind==='deadline')return '收货截止';if(c.kind==='node')return c.shipping?'根据运输工期倒推的最晚发货日':`${c.track?.owner?c.track.owner+' · ':''}最晚节点`;
+ if(c.kind==='reminder')return c.shipping?`发货节点 · ${c.target}`:`${c.track?.owner?c.track.owner+' · ':''}${c.step.name} · ${c.target}`;
+ return c.kind==='historical'?c.target:c.target||'今日进度';}
+function entryButton(c,day,cssClass='calendar-chip'){
+ const tone=entryTone(c);return `<button class="${cssClass} tone-${tone} ${(c.kind==='historical'||c.history)?'is-past':''}" data-action="calendar-entry" data-kind="${c.kind}" data-day="${day}" data-step="${c.step?.id||''}" data-product="${c.product.id}" title="${escAttr(`${c.product.title} · ${c.title} · ${entrySub(c)}`)}"><span class="chip-name">${safe(entryText(c))}</span>${cssClass==='week-item'||cssClass==='focus-entry'?`<span class="chip-description">${safe(entrySub(c))}</span>`:''}</button>`
+}
+function pageTitle(){
+ if(ui.view==='calendar')return ['赶稿日历',''];
+ if(ui.view==='progress')return ['我的进度',''];
+ if(ui.view==='products')return ['我的制品',''];
+ if(ui.view==='events')return ['参展活动',''];
+ return ['纸上赶稿',''];
+}
+function navButton(v,name,ico){return `<button class="nav-button ${ui.view===v?'selected':''}" data-action="view" data-view="${v}">${icon(ico)} ${name}</button>`}
+function sideMenu(){
+ if(ui.view==='products')return `<aside class="secondary-nav" aria-label="制品列表"><div class="secondary-title">我的制品</div><div class="secondary-list">${data.products.map(p=>`<button class="secondary-item ${p.id===ui.selectedProduct?'active':''}" data-action="select-product" data-product="${p.id}"><strong>${safe(p.title)}</strong><small>${TYPE_NAMES[p.type]||'制品'}</small></button>`).join('')||'<div class="secondary-empty">还没有制品</div>'}</div></aside>`;
+ if(ui.view==='events')return `<aside class="secondary-nav" aria-label="参展活动列表"><div class="secondary-title">参展活动</div><div class="secondary-list">${data.events.map(e=>`<button class="secondary-item ${e.id===ui.selectedEvent?'active':''}" data-action="select-event" data-event="${e.id}"><strong>${safe(e.name)}</strong><small>${fmtDay(e.ddl)} 收货</small></button>`).join('')||'<div class="secondary-empty">还没有活动</div>'}</div></aside>`;
+ return '';
+}
+function appShell(body){
+ const [title]=pageTitle(),second=ui.view==='products'||ui.view==='events';
+ const primary=ui.view==='events'?['新建活动','new-event']:['新建制品','new-product'];
+ return `<div class="app ${second?'has-subnav':''}">
+ <aside class="sidebar"><div class="brand"><span class="brand-mark">稿</span><span>纸上赶稿<small>DDL CALENDAR</small></span></div><nav class="nav">${navButton('calendar','赶稿日历','calendar')}${navButton('progress','我的进度','file')}${navButton('products','我的制品','file')}${navButton('events','参展活动','flag')}</nav><div class="sidebar-bottom"><button data-action="backup">${icon('download')} 导出数据</button><button data-action="help">${icon('settings')} 使用说明</button></div></aside>
+ ${sideMenu()}
+ <main class="main"><header class="topbar"><div><h1 class="page-title">${safe(title)}</h1></div><div class="actions">${ui.view==='calendar'||ui.view==='progress'?`<button class="btn" data-action="new-event">${icon('flag')} 新建活动</button>`:''}<button class="btn primary" data-action="${primary[1]}">${icon('plus')} ${primary[0]}</button></div></header>
+ ${second?`<div class="mobile-submenu">${ui.view==='products'?data.products.map(p=>`<button data-action="select-product" data-product="${p.id}" class="${p.id===ui.selectedProduct?'active':''}">${safe(p.title)}</button>`).join(''):data.events.map(e=>`<button data-action="select-event" data-event="${e.id}" class="${e.id===ui.selectedEvent?'active':''}">${safe(e.name)}</button>`).join('')}</div>`:''}${body}</main>
+ <nav class="mobile-nav">${[['calendar','日历','calendar'],['progress','进度','file'],['products','制品','file'],['events','活动','flag']].map(([v,name,ico])=>`<button data-action="view" data-view="${v}" class="${ui.view===v?'selected':''}">${icon(ico)}${name}</button>`).join('')}</nav></div>`;
+}
+
+function calendarPage(){
+ if(!data.events.length)return `<div class="pane empty"><strong>先创建参展活动</strong>输入活动收货 DDL 后即可添加制品。<button class="btn primary" data-action="new-event">新建活动</button> <button class="btn" data-action="sample">体验演示</button></div>`;
+ const entries=calendarEntriesForMode(),now=todayISO(),year=ui.month.getFullYear(),month=ui.month.getMonth();
+ const first=new Date(year,month,1,12),mDays=new Date(year,month+1,0).getDate(),offset=(first.getDay()+6)%7,totalCells=Math.ceil((offset+mDays)/7)*7;
+ const dayMap=new Map();for(const e of entries){if(!dayMap.has(e.date))dayMap.set(e.date,[]);dayMap.get(e.date).push(e)}
+ let days='';for(let i=0;i<totalCells;i++){
+  const d=new Date(year,month,1-offset+i,12),iso=dateISO(d),onMonth=d.getMonth()===month,rows=dayMap.get(iso)||[];
+  const visible=rows.slice(0,3);
+  days+=`<div class="day clean-day ${onMonth?'':'faded'} ${iso===now?'today':''} ${iso===ui.selectedDate?'selected':''}"><button class="day-date day-date-link" data-action="open-calendar-day" data-day="${iso}" title="查看${fmtDay(iso)}的进度"><strong>${d.getDate()}</strong>${rows.length?`<span class="day-count">${rows.length}</span>`:''}</button><div class="day-entries">${visible.map(e=>entryButton(e,iso)).join('')}${rows.length>visible.length?`<button class="more-entries" data-action="open-calendar-day" data-day="${iso}">+${rows.length-visible.length} 项</button>`:''}</div></div>`;
+ }
+ let weekly='';const weekStart=addDay(ui.selectedDate,-(parseDay(ui.selectedDate).getDay()+6)%7);
+ for(let i=0;i<7;i++){const day=addDay(weekStart,i),rows=dayMap.get(day)||[];weekly+=`<div class="week-day"><div class="week-day-head"><button class="btn ghost sm week-date ${day===now?'today':''}" data-action="open-calendar-day" data-day="${day}">${fmtDay(day)} <span class="small-day">周${'一二三四五六日'[i]}</span></button><span class="pill">${rows.length} 项</span></div>${rows.length?rows.map(r=>entryButton(r,day,'week-item')).join(''):'<div class="week-empty">—</div>'}</div>`;}
+ return `<section class="pane clean-calendar unified-calendar ${ui.mobileMode==='week'?'mobile-week-mode':''}">
+  <div class="calendar-toolbar"><div class="calendar-toolbar-main"><div class="cal-month">${year} 年 ${month+1} 月</div>${calendarFilterButtons()}</div><div class="cal-tools"><div class="calendar-view-picker" role="group" aria-label="日历显示范围"><button type="button" data-action="set-mobile-mode" data-mode="week" aria-pressed="${ui.mobileMode==='week'}">周</button><button type="button" data-action="set-mobile-mode" data-mode="month" aria-pressed="${ui.mobileMode==='month'}">月</button></div><button class="iconbtn" data-action="month-prev" aria-label="${ui.mobileMode==='week'?'上一周':'上个月'}">${icon('chevLeft')}</button><button class="iconbtn" data-action="month-next" aria-label="${ui.mobileMode==='week'?'下一周':'下个月'}">${icon('chevRight')}</button></div></div>
+  <div class="cal-hint"><span class="legend"><span class="legend-item"><i class="legend-dot red"></i>收货 DDL</span><span class="legend-item"><i class="legend-dot blue"></i>交稿 / 下印</span><span class="legend-item"><i class="legend-dot yellow"></i>提前提醒</span><span class="legend-item"><i class="legend-dot green"></i>我的工作</span></span></div>
+  <div class="weekdays">${'一二三四五六日'.split('').map(x=>`<div>周${x}</div>`).join('')}</div><div class="calendar-grid">${days}</div><div class="week-agenda">${weekly}</div></section>`;
+}
+function calendarDayModal(){
+ const day=ui.context?.day||ui.selectedDate,rows=calendarEntriesForMode().filter(c=>c.date===day);
+ return wrapModal(fmtDay(day)+' · 日历事项','',`<div class="day-modal-rows">${rows.length?rows.map(c=>entryButton(c,day,'focus-entry')).join(''):'<div class="empty-inline">当天没有事项。</div>'}</div>`,`<button class="btn" data-action="close-modal">关闭</button>`);
+}
+function ddlModal(){
+ const p=productBy(ui.context?.productId);
+ if(!p)return wrapModal('收货 DDL','',`<p>这件制品已不存在。</p>`);
+ const ev=eventBy(p.eventId),plan=scheduleProduct(p);
+ const node=plan.shared?.find(x=>x.shipping),dispatch=node?.dispatchDate||plan.p0?.latestDispatch||null;
+ return wrapModal('收货 DDL','',`<div class="node-overview"><div><small>制品</small><strong>${safe(p.title)}</strong></div><div><small>收货期限</small><strong>${safe(ev?.ddl||'未定')}</strong></div><div><small>最晚寄出</small><strong>${safe(dispatch||'待核算')}</strong></div></div><p class="page-desc" style="margin-top:15px">${safe(ev?.name||'活动未找到')} · ${ev?.mode==='official'?'官仓收货':'酒店收货'}</p><p class="page-desc">${plan.risk?.length?'排程有待确认事项，请以制品详情为准。':'详细工期请查看关联制品。'}</p>`,`<button class="btn" data-action="close-modal">关闭</button><button class="btn" data-action="open-ddl-event" data-event="${ev?.id||''}">查看活动</button><button class="btn primary" data-action="open-ddl-product" data-product="${p.id}">查看制品</button>`);
+}
+function personalTodayRows(day){
+ const m=new Map();
+ for(const c of allCards()){
+  if(c.date!==day||!c.step||!isMineStep(c.track,c.step)||!['quantity','fixed','historical'].includes(c.kind))continue;
+  const old=m.get(c.step.id);
+  if(!old|| (old.kind==='historical'&&c.kind!=='historical'))m.set(c.step.id,c);
+ }
+ // A missed latest finish removes daily quotas but must NOT hide unfinished work.
+ if(day===todayISO())for(const {p,s} of allSchedules())for(const t of s.tracks)for(const row of t.steps){
+  const st=row.step;
+  if(!st||doneStep(p,st)||!isMineStep(t.track,st)||!row.end||row.end>=day||m.has(st.id))continue;
+  m.set(st.id,{date:day,product:p,step:st,track:t.track,kind:'overdue',overdue:true,
+    due:row.end,forecastFinish:row.forecastFinish,target:'已过原定截止日 · 需重新安排',plan:null});
+ }
+ return [...m.values()].sort((a,b)=>Number(doneStep(a.product,a.step))-Number(doneStep(b.product,b.step))||a.product.title.localeCompare(b.product.title));
+}
+function myProgressPage(){
+ const day=ui.selectedDate,now=todayISO(),rows=personalTodayRows(day),pending=pendingFollowups(now);
+ const todayLogs=data.logs.filter(l=>l.date===day).filter(l=>{const ref=stepBy(l.stepId);return ref&&isMineStep(ref.t,ref.s)});
+ const recentLogs=data.logs.filter(l=>{const ref=stepBy(l.stepId);return ref&&isMineStep(ref.t,ref.s)}).sort((a,b)=>(b.date||'').localeCompare(a.date||'')||(b.createdAt||'').localeCompare(a.createdAt||'' )).slice(0,8);
+ const minutes=todayLogs.reduce((sum,l)=>sum+nval(l.minutes),0);
+ const incomplete=rows.filter(r=>!doneStep(r.product,r.step)).length;
+ const allNodes=organizerNodes().filter(x=>x.followup.date&&x.followup.date>=now&&x.followup.date<=addDay(now,14));
+ const future=allNodes.filter(x=>!pending.some(y=>y.st.id===x.st.id)).sort((a,b)=>a.followup.date.localeCompare(b.followup.date)).slice(0,7);
+ const deadlineRows=allSchedules().filter(x=>x.s.deadline&&x.s.deadline>=now&&x.s.deadline<=addDay(now,14)).sort((a,b)=>a.s.deadline.localeCompare(b.s.deadline));
+ const taskHTML=rows.length?rows.map(c=>{const p=c.product,st=c.step,done=doneStep(p,st),quantity=st.kind==='quantity',logs=todayLogs.filter(x=>x.stepId===st.id),actual=logs.reduce((sum,l)=>sum+nval(l.amount),0),used=logs.reduce((sum,l)=>sum+nval(l.minutes),0),total=quantity?nval(st.total):0,finish=quantity?stepDone(p,st):0,ratio=quantity&&total>0?Math.min(100,Math.max(0,finish/total*100)):0;
+  return `<article class="today-task ${done?'completed-work':''} ${c.overdue?'overdue-work':''}"><div class="today-task-header"><div><small>${safe(p.title)}${c.track?' · '+safe(c.track.name):''}</small><h3>${safe(st.name)}</h3></div><span class="${done?'status-done':'status-todo'}">${done?'已完成':'待进行'}</span></div>
+  <div class="today-task-plan">${quantity?`<span>${c.overdue?'逾期任务':'今日计划'} <strong>${safe(c.target||'待安排')}</strong></span><span>今日已记 <strong>${cleanN(actual)} ${safe(st.unit||'')}</strong></span>`:`<span>${safe(c.target||'按预计工期推进')}</span>`}${c.overdue?`<span class="overdue-note">原定截止 ${fmtDay(c.due)} · 当前仍未完成</span>`:''}</div>
+  ${quantity?`<div class="today-bar"><span style="width:${ratio}%"></span></div><div class="today-remaining">累计 ${cleanN(finish)} / ${cleanN(total)} ${safe(st.unit||'')}${used?' · 今日 '+formatHours(used):''}</div>`:`<div class="today-remaining">${used?'今日 '+formatHours(used):'可填写阶段进度与用时'}</div>`}
+  <button class="btn sm ${done?'':'soft'}" data-action="task" data-step="${st.id}" data-day="${day}">${done?'查看 / 补记':'记录进度'}</button></article>`;
+ }).join(''):`<div class="empty-inline">这一天没有安排自己的赶稿任务。${day===now?' 可在制品中将对应环节标记为「我的工作」。':''}</div>`;
+ const reminderHTML=pending.length?pending.slice(0,ui.showAllFollowups?pending.length:5).map(x=>{const f=x.followup;return `<div class="attention-item"><span class="attention-dot ${f.bucket==='overdue'?'red':'yellow'}"></span><div class="attention-body"><strong>${safe(x.p.title)} · ${safe(x.st.name)}</strong><small>${safe(x.track?.owner||'下印')} · ${safe(FandomFollowUpP1.followupLabel(f.bucket))} · ${f.date?fmtDay(f.date):'未定日期'}</small></div><div class="attention-actions">${['contact','revision'].includes(f.bucket)?`<button class="btn sm" data-action="mark-contact" data-step="${x.st.id}">已联系</button>`:''}<button class="btn sm" data-action="open-node" data-step="${x.st.id}">详情</button></div></div>`}).join('')+(pending.length>5?`<button class="btn sm" data-action="toggle-followups">${ui.showAllFollowups?'收起':'展开其余 '+(pending.length-5)+' 项'}</button>`:''):`<div class="empty-inline">目前没有待处理的催稿或验收事项。</div>`;
+ const upcoming=[...future.map(x=>({date:x.followup.date,kind:'node',title:x.p.title+' · '+(x.shipping?'最晚寄出':x.st.name),id:x.st.id})),...deadlineRows.map(x=>({date:x.s.deadline,kind:'deadline',title:x.p.title+' · 收货 DDL',id:x.p.id}))].sort((a,b)=>a.date.localeCompare(b.date)).slice(0,10);
+ const upcomingHTML=upcoming.length?upcoming.map(e=>`<button class="upcoming-row" data-action="${e.kind==='deadline'?'detail':'open-node'}" data-${e.kind==='deadline'?'product':'step'}="${e.id}"><span class="upcoming-date">${fmtDay(e.date)}</span><span class="upcoming-mark ${e.kind==='deadline'?'red':'blue'}"></span><span>${safe(e.title)}</span></button>`).join(''):`<div class="empty-inline">未来两周暂无需要跟踪的节点。</div>`;
+ return `<div class="progress-header"><div><div class="eyebrow">每日安排</div><h2>${day===now?'今天':fmtDay(day)}要做什么</h2></div><div class="progress-date-controls"><button class="iconbtn" data-action="progress-prev" aria-label="前一天">${icon('chevLeft')}</button><input type="date" id="progress-day" value="${day}" aria-label="选择进度日期"><button class="iconbtn" data-action="progress-next" aria-label="后一天">${icon('chevRight')}</button>${day!==now?'<button class="btn sm" data-action="today-progress">返回今天</button>':''}</div></div>
+ <div class="progress-summary"><span><strong>${incomplete}</strong> 项待做</span><span><strong>${pending.length}</strong> 项待关注</span><span><strong>${todayLogs.length}</strong> 条已记录</span>${minutes?`<span><strong>${formatHours(minutes)}</strong> 今日用时</span>`:''}</div>
+ <div class="progress-columns"><div class="progress-work"><section class="pane"><div class="pane-heading"><div class="pane-title">${day===now?'今日':'当日'}赶稿</div><span class="muted">只记录自己的工作</span></div><div class="progress-task-list">${taskHTML}</div></section>
+ </div>
+ <div class="progress-followups"><section class="pane"><div class="pane-heading"><div class="pane-title">需要关注${pending.length?` <span class="badge-count">${pending.length}</span>`:''}</div></div><div class="attention-list">${reminderHTML}</div></section><section class="pane"><div class="pane-heading"><div class="pane-title">未来 14 天</div></div><div class="upcoming-list">${upcomingHTML}</div></section></div></div>
+ <details class="pane my-progress-recent"><summary class="pane-heading" style="cursor:pointer;font-weight:700">最近进度（${recentLogs.length} 条）</summary><div class="recent-list">${recentLogs.length?recentLogs.map(l=>{const ref=stepBy(l.stepId);return `<div class="recent-entry"><span>${safe(ref?.p.title||'制品')} · ${safe(ref?.s.name||'环节')}</span><small>${fmtDay(l.date)} · ${l.amount?cleanN(l.amount)+' '+safe(ref?.s.unit||''):l.note||'阶段记录'}${l.minutes?' · '+formatHours(l.minutes):''}</small></div>`}).join('') :'<div class="empty-inline">暂无进度记录。</div>'}</div></details>`;
+}
+
+function productProgress(p){let sum=0,done=0;for(const s of [...p.tracks.flatMap(t=>t.steps),...p.shared]){sum++;if(doneStep(p,s))done++;else if(s.kind==='quantity'&&nval(s.total)>0)done+=Math.min(1,stepDone(p,s)/s.total)}return sum?Math.round(done/sum*100):0}
+function productsPage(){return `<div class="section-head"><h2>全部制品 <span class="badge-count">${data.products.length}</span></h2><button class="btn sm" data-action="new-product">${icon('plus')} 新建制品</button></div>${data.products.length?`<div class="rows">${data.products.map(p=>{const s=scheduleProduct(p),progress=productProgress(p);return `<div class="item-card"><div class="item-header"><div><div class="item-title">${safe(p.title)}</div><div class="item-meta">${TYPE_NAMES[p.type]||'自定义'} · ${safe(s.event?.name||'未关联活动')} · 收货 ${fmtDay(s.deadline)}</div></div><div class="row-end"><span class="pill ${s.risk.length?'orange':'green'}">${s.risk.length?'需核对工期':'排程中'}</span><button class="btn sm" data-action="detail" data-product="${p.id}">查看详情 ${icon('arrow')}</button></div></div><div class="progress-row"><div class="progress-top"><span>创作进度（各环节概览）</span><span>${progress}%</span></div><div class="bar"><div class="bar-inner" style="width:${progress}%"></div></div></div></div>`}).join('')}</div>`:`<div class="pane empty"><strong>还没有制品</strong>从文本本、漫本、合志、图集或其他制品模板中选择一个，系统会预先建立可修改的工序。<br><button class="btn primary" data-action="new-product">创建第一件制品</button></div>`}`}
+function eventsPage(){
+ const e=eventBy(ui.selectedEvent)||data.events[0];if(!e)return `<div class="pane empty"><strong>还没有参展活动</strong><button class="btn primary" data-action="new-event">新建活动</button></div>`;
+ const ps=data.products.filter(p=>p.eventId===e.id);
+ return `<div class="detail-hero compact-hero"><div><div class="eyebrow">${e.mode==='official'?'官仓收货':'酒店收货'}</div><h2>${safe(e.name)}</h2><p class="page-desc">收货 DDL · ${fmtDay(e.ddl)} · 关联 ${ps.length} 件制品</p></div><div class="row-end"><button class="btn sm" data-action="edit-event" data-event="${e.id}">编辑活动</button><button class="btn sm danger" data-action="delete-event" data-event="${e.id}">删除</button></div></div><div class="section-head"><h2>关联制品</h2><button class="btn sm" data-action="new-product">＋ 新建制品</button></div><section class="pane event-products">${ps.length?ps.map(p=>{const s=scheduleProduct(p);return `<button class="event-product" data-action="select-product" data-product="${p.id}"><span><strong>${safe(p.title)}</strong><small>${TYPE_NAMES[p.type]||'制品'} · 创作截稿 ${fmtDay(s.trackDeadline)}</small></span><span>查看 →</span></button>`}).join(''):'<div class="empty-inline">尚未关联制品。</div>'}</section>`;
+}
+
+function detailPage(){
+ const p=productBy(ui.selectedProduct);if(!p){ui.view='products';return productsPage()}
+ const sched=scheduleProduct(p),trackMap=new Map(sched.tracks.map(x=>[x.track.id,x]));const postById=new Map(sched.shared.map(x=>[x.step.id,x]));
+ const allStages=p.tracks.map(t=>{
+  const ts=trackMap.get(t.id), expanded=ui.expandedTracks.has(t.id), managing=ui.manageTracks.has(t.id),sorted=[...t.steps].sort((a,b)=>Number(doneStep(p,a))-Number(doneStep(p,b)));
+  const pending=sorted.filter(x=>!doneStep(p,x));const current=pending[0];
+  return `<article class="track-card slim-track"><header class="slim-track-header"><div class="track-overview"><div class="track-name">${safe(t.name)} ${t.isMine?'<span class="mine-mark">我的工作</span>':''}</div><div class="track-summary">${pending.length?`当前：${safe(current.name)} · ${pending.length} 个环节待完成`:'全部环节已完成'}</div></div><div class="row-end"><button class="btn sm" data-action="edit-track" data-product="${p.id}" data-track="${t.id}">设置</button><button class="btn sm ${expanded?'soft':''}" data-action="toggle-track" data-track="${t.id}">${expanded?'收起':'展开'}</button></div></header>
+  ${expanded?`<div class="slim-step-list">${sorted.map(st=>{const plan=ts?.steps.find(x=>x.step.id===st.id),complete=doneStep(p,st),mine=isMineStep(t,st);const done=stepDone(p,st);const planEnd=plan?.end;
+   const info=complete?'已完成':st.kind==='quantity'?`${cleanN(done)} / ${cleanN(st.total)} ${safe(st.unit)}`:`预计 ${nval(st.days,2)} 天`;
+   return `<div class="slim-step ${complete?'step-faded':''}"><button class="slim-step-main" data-action="${mine?'task':'open-node'}" data-step="${st.id}"><span class="slim-step-name">${safe(st.name)}</span><span class="slim-step-meta">${info}${planEnd?` · 截至 ${fmtDay(planEnd)}`:''}</span></button><div class="slim-step-ends">${!complete&&!mine?`<button class="reminder-pill" data-action="reminder" data-step="${st.id}">${nval(st.remindDays,7)>0?`提前${nval(st.remindDays,7)}天`:'设置提醒'}</button>`:''}<button class="slim-action" data-action="${mine?'task':'open-node'}" data-step="${st.id}">${mine?'记录':'节点'}</button></div>${managing?`<div class="slim-manage"><button data-action="move-step" data-product="${p.id}" data-track="${t.id}" data-step="${st.id}" data-dir="-1">上移</button><button data-action="move-step" data-product="${p.id}" data-track="${t.id}" data-step="${st.id}" data-dir="1">下移</button><button data-action="edit-step" data-step="${st.id}">编辑</button><button data-action="delete-step" data-step="${st.id}">删除</button><button data-action="toggle-step" data-step="${st.id}">${complete?'恢复':'完成'}</button></div>`:''}</div>`;
+  }).join('')}</div><footer class="slim-track-foot"><button class="btn sm" data-action="add-step" data-product="${p.id}" data-track="${t.id}">${icon('plus')} 加环节</button><button class="btn sm ${managing?'soft':''}" data-action="toggle-manage-track" data-track="${t.id}">${managing?'完成管理':'管理流程'}</button></footer>`:''}</article>`;
+ }).join('');
+ const shared=[...p.shared].sort((a,b)=>Number(doneStep(p,a))-Number(doneStep(p,b))).map(st=>{
+  const plan=postById.get(st.id), complete=doneStep(p,st),mine=isMineStep(null,st);
+  return `<div class="slim-step ${complete?'step-faded':''}"><button class="slim-step-main" data-action="${mine?'task':'open-node'}" data-step="${st.id}"><span class="slim-step-name">${safe(st.name)}</span><span class="slim-step-meta">${complete?'已完成':`预计 ${nval(st.days,2)} 天 · ${plan?.shipping?'最晚寄出 '+fmtDay(plan.dispatchDate):fmtSpan(plan?.start,plan?.end)}`}</span></button><div class="slim-step-ends">${!complete&&!mine?`<button class="reminder-pill" data-action="reminder" data-step="${st.id}">提前${nval(st.remindDays,7)}天</button>`:''}<button class="slim-action" data-action="${mine?'task':'open-node'}" data-step="${st.id}">${mine?'记录':'节点'}</button></div>${ui.manageProduction?`<div class="slim-manage"><button data-action="move-step" data-product="${p.id}" data-track="shared" data-step="${st.id}" data-dir="-1">上移</button><button data-action="move-step" data-product="${p.id}" data-track="shared" data-step="${st.id}" data-dir="1">下移</button><button data-action="edit-step" data-step="${st.id}">编辑</button><button data-action="delete-step" data-step="${st.id}">删除</button><button data-action="toggle-step" data-step="${st.id}">${complete?'恢复':'完成'}</button></div>`:''}</div>`;
+ }).join('');
+ const logs=data.logs.filter(l=>l.productId===p.id).sort((x,y)=>y.createdAt-x.createdAt).slice(0,6);
+ return `<div class="detail-hero compact-hero"><div><div class="eyebrow">${TYPE_NAMES[p.type]||'制品'}</div><h2>${safe(p.title)}</h2><p class="page-desc">${safe(sched.event?.name||'无活动')} · 收货 DDL ${fmtDay(sched.deadline)} · 创作截稿 ${fmtDay(sched.trackDeadline)}</p></div><div class="row-end"><button class="btn sm ${data.baselines[p.id]?'soft':'primary'}" data-action="confirm-baseline" data-product="${p.id}">${data.baselines[p.id]?'重设原计划':'确认原计划'}</button><button class="btn sm" data-action="edit-product" data-product="${p.id}">基本信息</button><button class="btn sm danger" data-action="delete-product" data-product="${p.id}">删除</button></div></div>
+ 
+ ${sched.risk.length?`<div class="alert">${icon('alert')} ${sched.risk.map(safe).join('；')}</div>`:''}
+ <div class="section-head"><h2>制作内容 <span class="badge-count">${p.tracks.length}</span></h2><button class="btn sm" data-action="add-track" data-product="${p.id}">${icon('plus')} 添加内容</button></div>
+ <div class="slim-tracks">${allStages}</div>
+ <div class="section-head"><h2>下印环节</h2><div class="row-end"><button class="btn sm" data-action="add-step" data-product="${p.id}" data-track="shared">加环节</button><button class="btn sm ${ui.manageProduction?'soft':''}" data-action="toggle-production-manage">${ui.manageProduction?'完成管理':'管理流程'}</button></div></div>
+ <section class="pane compact-production">${shared||'<div class="focus-empty">尚无环节</div>'}</section>
+ ${p.pieces?.length?`<div class="section-head"><h2>逐张画稿 <span class="badge-count">${p.pieces.length}</span></h2><div class="row-end"><button class="btn sm" data-action="add-piece" data-product="${p.id}">${icon('plus')} 加画稿</button><button class="btn sm" data-action="toggle-pieces">${ui.showPieces?'收起':'展开'}</button></div></div>${ui.showPieces?`<div class="pane"><div class="pieces-grid">${p.pieces.map(piece=>`<div class="piece-card"><div class="piece-title"><span>${safe(piece.name)}</span><button class="btn ghost sm danger" data-action="delete-piece" data-product="${p.id}" data-piece="${piece.id}">×</button></div><div class="piece-chips">${PIECE_PHASES.map(([key,label])=>`<button class="piece-chip ${piece[key]?'active':''}" data-action="toggle-piece" data-product="${p.id}" data-piece="${piece.id}" data-phase="${key}">${piece[key]?'✓ ':''}${label}</button>`).join('')}</div></div>`).join('')}</div></div>`:''}`:''}
+ <div class="section-head"><h2>最近进度</h2><button class="btn sm" data-action="view" data-view="calendar">返回日历</button></div>
+ <div class="pane compact-logs">${logs.length?logs.map(l=>{const ref=stepBy(l.stepId);return `<div class="log-line"><div><div class="log-title">${fmtDay(l.date)} · ${safe(ref?.s.name||'已删除环节')}</div><div class="log-detail">${safe(l.note||'')} ${l.minutes?`· ${formatHours(l.minutes)}`:''}</div></div><div class="row-end"><span class="pill">${cleanN(l.amount)} ${safe(ref?.s.unit||'')}</span><button class="btn sm danger" data-action="delete-log" data-log="${l.id}">删除</button></div></div>`}).join(''):'<div class="focus-empty">暂无记录</div>'}</div>`;
+}
+function render(){if(ui.view==='products'&&!productBy(ui.selectedProduct))ui.selectedProduct=data.products[0]?.id||null;if(ui.view==='events'&&!eventBy(ui.selectedEvent))ui.selectedEvent=data.events[0]?.id||null;const body=ui.view==='calendar'?calendarPage():ui.view==='progress'?myProgressPage():ui.view==='events'?eventsPage():ui.view==='products'?(data.products.length?detailPage():productsPage()):detailPage();document.getElementById('app').innerHTML=appShell(body);renderModal()}
+function openModal(type,context={}){ui.modal=type;ui.context=context;renderModal()}
+function closeModal(){ui.modal=null;ui.context=null;document.getElementById('modal-root').innerHTML=''}
+function wrapModal(title,subtitle,body,foot='',wide=false){return `<div class="modal-layer" data-action="overlay"><div class="modal ${wide?'wide':''}" role="dialog" aria-modal="true" aria-label="${safe(title)}"><header class="modal-top"><div><h2>${safe(title)}</h2>${subtitle?`<p>${safe(subtitle)}</p>`:''}</div><button class="xbtn" data-action="close-modal" aria-label="关闭">×</button></header><div class="modal-body">${body}</div>${foot?`<footer class="modal-foot">${foot}</footer>`:''}</div></div>`}
+function eventModal(){const event=ui.context?.id?eventBy(ui.context.id):null,mode=event?.mode||'official';const form=`<form id="event-form"><div class="field"><label>活动名称 *</label><input name="name" required maxlength="100" value="${escAttr(event?.name||'')}"></div><div class="field"><label>收货方式 *</label><div class="delivery-select"><label class="delivery-option"><input type="radio" name="mode" value="official" ${mode==='official'?'checked':''}><span>寄往官仓</span></label><label class="delivery-option"><input type="radio" name="mode" value="hotel" ${mode==='hotel'?'checked':''}><span>酒店收货</span></label></div></div><div class="field"><label>收货 DDL *</label><input name="ddl" type="date" required value="${event?.ddl||addDay(todayISO(),45)}"><small>建议最晚 DDL 为官仓关闭前一天 / 漫展布展日前一天。</small></div></form>`;return wrapModal(event?'编辑参展活动':'新建参展活动','',form,`<button class="btn" data-action="close-modal">取消</button><button class="btn primary" data-action="save-event">保存活动</button>`)}
+function pieceStageModal(){
+ const ctx=ui.context||{},p=productBy(ctx.productId),piece=p?.pieces.find(q=>q.id===ctx.pieceId),phase=ctx.phase;
+ if(!piece||!['sketch','color','refine'].includes(phase))return '';
+ const label=({sketch:'草稿',color:'上色',refine:'细化'})[phase];
+ const recorded=pieceStageLogDate(p,piece.id,phase);
+ return wrapModal('确认画稿阶段',`${p.title} · ${piece.name} · ${label}`,
+ `<form id="piece-stage-form"><div class="field"><label>实际完成日期</label><input name="date" type="date" value="${todayISO()}" max="${todayISO()}" required><small>默认今天，也可以补录过去日期。手动确认独立于赶稿日志。</small></div></form>${recorded?'<p class="help-note">此阶段已有赶稿日志。保存手动确认后，即使删除那条日志，独立确认也会保留。</p>':''}`,
+ `<button class="btn" data-action="close-modal">取消</button><button class="btn primary" data-action="save-piece-stage">确认完成</button>`);
+}
+function eventImpactModal(){
+ const ctx=ui.context||{},e=eventBy(ctx.id),draft=ctx.draft;
+ if(!e||!draft)return '';
+ const ps=data.products.filter(p=>p.eventId===e.id);
+ const before=ps.map(p=>({p,plan:scheduleProduct(p)}));
+ const original=e.ddl;e.ddl=draft.ddl;
+ let after;try{after=ps.map(p=>({p,plan:scheduleProduct(p)}));}finally{e.ddl=original;}
+ const rows=before.map((x,i)=>{
+  const prev=x.plan,next=after[i].plan;
+  const oldShip=prev.shared.find(y=>y.shipping)?.dispatchDate;
+  const newShip=next.shared.find(y=>y.shipping)?.dispatchDate;
+  return `<div class="impact-row"><strong>${safe(x.p.title)}</strong><small>最晚寄出：${fmtDay(oldShip)} → ${fmtDay(newShip)}</small><small>内容最晚齐备：${fmtDay(prev.trackDeadline)} → ${fmtDay(next.trackDeadline)}</small></div>`;
+ }).join('');
+ return wrapModal('确认调整收货 DDL',`${e.name} · ${fmtDay(original)} → ${fmtDay(draft.ddl)}`,
+ `<p class="impact-note">修改后将重新推算以下 ${ps.length} 件制品的最晚日期。原计划基线及实际完成记录不会被覆盖。</p><div class="impact-rows">${rows}</div>`,
+ `<button class="btn" data-action="edit-event-back">返回修改</button><button class="btn primary" data-action="confirm-event-impact">确认调整</button>`);
+}
+function productModal(){const edit=ui.context?.id?productBy(ui.context.id):null;const draft=ui.context?.draft||(ui.context.draft={type:edit?.type||'novel',count:edit?.type==='novel'?60000:edit?.type==='comic'?32:edit?.type==='artbook'?8:edit?.type==='anthology'?2:1});const t=draft.type;const countLabel=t==='novel'?'预估字数':t==='comic'?'预估 P 数':t==='artbook'?'预计画稿张数':t==='goods'?'设计稿数量':'参与者人数';const countDefault={novel:60000,comic:32,artbook:8,goods:1,anthology:2}[t];return wrapModal(edit?'编辑制品':'新建制品','',`<form id="product-form"><div class="field"><label>制品类型</label><div class="type-grid">${Object.keys(TYPE_NAMES).map(k=>`<button type="button" class="type-card ${t===k?'selected':''}" data-action="choose-type" data-type="${k}" ${edit?'disabled':''}>${TYPE_NAMES[k]}</button>`).join('')}</div></div><div class="field"><label>制品名称 *</label><input name="title" required maxlength="100" value="${escAttr(draft.title??edit?.title??'')}"></div><div class="form-grid"><div class="field"><label>关联参展活动 *</label><select name="eventId" required>${data.events.map(e=>`<option value="${e.id}" ${(draft.eventId||edit?.eventId||data.events[0]?.id)===e.id?'selected':''}>${safe(e.name)} · ${fmtDay(e.ddl)}</option>`).join('')}</select></div><div class="field"><label>寄出前预留（天）</label><input type="number" name="handoffBufferDays" min="0" max="30" step="1" value="${edit?.handoffBufferDays??1}"></div>${edit?'':`<div class="field"><label>${countLabel}</label><input name="count" type="number" min="1" max="${t==='artbook'?100:t==='anthology'?60:1000000}" step="1" value="${nval(draft.count,countDefault)}"><small>仅预估，创建后可以修改每个阶段的目标数量。</small></div>`}</div></form>`,`<button class="btn" data-action="close-modal">取消</button><button class="btn primary" data-action="save-product">${edit?'保存修改':'创建制品'}</button>`)}
+function trackModal(){const ctx=ui.context||{},p=productBy(ctx.productId),t=p?.tracks.find(x=>x.id===ctx.trackId),isAnthology=p?.type==='anthology';return wrapModal(t?'编辑参与内容':'新增参与内容','',`<form id="track-form">${isAnthology?`<div class="field"><label>内容类型</label><select name="template"><option value="text" ${(t?.category||(t?.steps.some(s=>['草稿','上色','细化'].includes(s.name))?'illustration':'text')||'text')==='text'?'selected':''}>文本</option><option value="illustration" ${(t?.category||(t?.steps.some(s=>['草稿','上色','细化'].includes(s.name))?'illustration':'text'))==='illustration'?'selected':''}>绘图</option></select></div><div class="field"><label>参与者姓名 *</label><input name="owner" required value="${escAttr(t?.owner||'作者A')}"></div>`:`<div class="field"><label>工作内容 *</label><input name="name" required value="${escAttr(t?.name||'新工作内容')}"></div><div class="field"><label>参与者姓名</label><input name="owner" value="${escAttr(t?.owner||'主催')}"></div>${t?'':`<div class="field"><label>预设环节</label><select name="template"><option value="custom">自定义</option><option value="text">文本</option><option value="illustration">绘图</option><option value="cover">封面</option></select></div>`}`}<label class="work-owner-check"><input type="checkbox" name="isMine" value="yes" ${(t?!!t.isMine:false)?'checked':''}> 这是我的工作（显示在「我的」日历）</label></form>`,`<button class="btn" data-action="close-modal">取消</button>${t?'<button class="btn danger" data-action="delete-track">删除</button>':''}<button class="btn primary" data-action="save-track">保存</button>`)}
+function stepModal(){const context=ui.context||{},ref=context.stepId?stepBy(context.stepId):null,s=ref?.s||mkStep('新环节','fixed',{days:2}),kind=s.kind;return wrapModal(ref?'编辑工序':'新增制作环节','数量型用于每天的赶稿量；预计工期和等待交付型用于倒排日期。',`<form id="step-form"><div class="field"><label>环节名称 *</label><input name="name" required value="${escAttr(ref?s.name:'新环节')}" maxlength="80"></div><div class="field"><label>环节类型</label><select name="kind" id="step-kind"><option value="quantity" ${kind==='quantity'?'selected':''}>数量进度 · 字数 / P / 张数</option><option value="fixed" ${kind==='fixed'?'selected':''}>预计工期 · 我需要完成</option><option value="external" ${kind==='external'?'selected':''}>等待交付 · 约稿 / 打样 / 大货</option></select></div><div id="qty-fields" class="${kind==='quantity'?'':'hide'}"><div class="form-grid"><div class="field"><label>预计总量</label><input name="total" type="number" min="0" step="0.5" value="${nval(s.total)}"></div><div class="field"><label>单位</label><input name="unit" value="${escAttr(s.unit||'P')}" placeholder="字 / P / 张"></div></div><div class="form-grid"><div class="field"><label>初始已完成量</label><input name="done" type="number" min="0" step="0.5" value="${nval(s.done)}"><small>今日进度会在此基础上累加</small></div><div class="field"><label>每单位预计耗时（小时，可留空）</label><input name="rate" type="number" min="0" step="0.05" value="${s.unitMinutes!=null?cleanN(nval(s.unitMinutes)*(s.unit==='字'?1000:1)/60,3):''}"><small>“字”按每 1000 字计算，其余按每 1 单位</small></div></div><div class="field"><label>预计工期（天，可空）</label><input name="plannedDays" type="number" min="1" step="1" value="${s.plannedDays||''}"><small>空白时按当前剩余日历临时分配，日期仅供参考。</small></div>${s.pieceStage?`<p class="help-note">此阶段与下方逐张画稿清单关联，已完成量由清单决定。</p>`:''}</div><div id="duration-fields" class="${kind==='quantity'?'hide':''}"><div class="field"><label>预计工期（天）</label><input name="days" type="number" min="1" max="365" step="1" value="${Math.max(1,nval(s.days,2))}"><small>按自然日计算；已完成环节仍保留历史与前后依赖。</small></div><label style="font-size:12px"><input name="completed" type="checkbox" ${s.completed?'checked':''}> 已完成 / 已交付</label></div><div id="reminder-settings" class="${isMineStep(ref?.t,s)?'hide':''}"><div class="form-divider"></div><div class="form-grid"><div class="field"><label>提前提醒（天，0 为关闭）</label><input type="number" name="remindDays" min="0" max="365" step="1" value="${s.remindDays===null?0:nval(s.remindDays,7)}"></div><div class="field"><label>节点颜色</label><select name="nodeColor">${[['blue','蓝色'],['purple','紫色'],['gray','灰色'],['green','绿色']].map(([v,l])=>`<option value="${v}" ${(s.nodeColor||'blue')===v?'selected':''}>${l}</option>`).join('')}</select></div></div><div class="field"><label>提醒颜色</label><select name="remindColor">${[['yellow','黄色'],['orange','橙色'],['purple','紫色']].map(([v,l])=>`<option value="${v}" ${(s.remindColor||'yellow')===v?'selected':''}>${l}</option>`).join('')}</select></div></div><label class="work-owner-check"><input type="checkbox" name="isMine" value="yes" ${isMineStep(ref?.t,s)?'checked':''}> 这是我的工作（进入每日计划）</label></form>`,`<button class="btn" data-action="close-modal">取消</button><button class="btn primary" data-action="save-step">保存工序</button>`)}
+
+function logModal(){const ctx=ui.context||{},ref=stepBy(ctx.stepId);if(!ref)return '';const s=ref.s,unit=s.unit||'单位';return wrapModal('填写今日进度',`${ref.p.title} · ${s.name}`,`<form id="log-form"><div class="field"><label>时间</label><input type="date" name="date" value="${ctx.date||todayISO()}" required></div>${s.kind==='quantity'?`<div class="field"><label>今日进度（${safe(unit)}）</label><input type="number" name="amount" min="0" step="${unit==='字'||s.pieceStage?'1':'0.5'}" value="0" required><small>填写今日新增的数量。</small></div>`:`<div class="field"><label>今日进度</label><input name="progressText" maxlength="200" placeholder="填写今天完成了什么"></div>`}<div class="field"><label>今日用时（小时）</label><input type="number" name="hours" min="0" step="0.25" placeholder="可留空"></div><div class="mark-done"><label class="done-check"><input name="complete" type="checkbox" ${doneStep(ref.p,s)?'checked':''}><span>标记完成</span></label><small>完成后环节变灰，并排列到本路线末尾。</small></div></form>`,`<button class="btn" data-action="close-modal">取消</button><button class="btn primary" data-action="save-log">保存进度</button>`)}
+function reminderModal(){const ref=stepBy(ui.context?.stepId);if(!ref)return '';const s=ref.s;const count=s.remindDays===null?0:nval(s.remindDays,7);return wrapModal('提前提醒',`${ref.p.title} · ${s.name}`,`<form id="reminder-form"><div class="field"><label>提前几天提醒</label><input type="number" name="days" min="0" max="365" step="1" value="${count}" required><small>默认提前 7 天，0 为关闭。</small></div><div class="form-grid"><div class="field"><label>节点颜色</label><select name="nodeColor">${[['blue','蓝色'],['purple','紫色'],['gray','灰色'],['green','绿色']].map(([v,l])=>`<option value="${v}" ${(s.nodeColor||'blue')===v?'selected':''}>${l}</option>`).join('')}</select></div><div class="field"><label>提醒颜色</label><select name="remindColor">${[['yellow','黄色'],['orange','橙色'],['purple','紫色']].map(([v,l])=>`<option value="${v}" ${(s.remindColor||'yellow')===v?'selected':''}>${l}</option>`).join('')}</select></div></div></form>`,`<button class="btn" data-action="close-modal">取消</button><button class="btn primary" data-action="save-reminder">保存提醒</button>`)}
+function nodeModal(){
+ const ref=stepBy(ui.context?.stepId);if(!ref)return '';
+ const st=ref.s,sch=scheduleProduct(ref.p),row=sch.tracks.flatMap(x=>x.steps).concat(sch.shared).find(x=>x.step?.id===st.id);
+ const shipping=!!row?.shipping,due=shipping?row.dispatchDate:row?.end;
+ const p0row=sch.p0?.plan.rows[st.id],baseline=data.baselines[ref.p.id]?.dates[st.id];
+ const actual=shipping?ref.p.actualDispatch||st.completedAt||'':st.completedAt||'';
+ const state=FandomFollowUpP1.stateFor(st,due,todayISO(),shipping),accepted=FandomFollowUpP1.statusOf(st)==='accepted';
+ const history=(st.deliveryHistory||[]).slice(-5).map(v=>`<div class="history-entry">${fmtDay(v.date)} · ${safe(({'pending':'等待交稿','submitted':'已提交待验收','revision':'需修改','accepted':'已确认完成','revision_due_changed':'返修改期'})[v.type]||v.type)}${v.note?` · ${safe(v.note)}`:''}</div>`).join('');
+ const contacts=(st.contactHistory||[]).slice(-3).map(v=>`<div class="history-entry">${fmtDay(v.date)} 已联系 · 对应 ${fmtDay(v.targetDate)}${v.note?` · ${safe(v.note)}`:''}</div>`).join('');
+ const why=p0row?.latestProvisional?'（临时估算）':'';
+ if(shipping)return wrapModal('最晚寄出',`${ref.p.title} · ${st.name}`,
+ `<div class="node-overview"><div><small>最晚寄出</small><strong>${fmtDay(due)}</strong></div><div><small>原计划</small><strong>${fmtDay(data.baselines[ref.p.id]?.latestDispatch)}</strong></div></div><form id="node-form"><div class="field"><label>实际寄出日期（可空）</label><input type="date" name="actualFinished" value="${escAttr(actual)}"></div><label class="work-owner-check"><input name="completed" type="checkbox" ${st.completed?'checked':''}> 已寄出（实际日期未填写则保持未知）</label></form>${contacts?`<div class="history-list">${contacts}</div>`:''}`,
+ `<button class="btn" data-action="reminder" data-step="${st.id}">提醒设置</button><button class="btn primary" data-action="save-node">保存</button>`);
+ const activeRevision=FandomFollowUpP1.currentRevision(st);
+ return wrapModal('交稿节点',`${ref.p.title} · ${st.name}`,
+ `<div class="node-overview"><div><small>倒排最晚日</small><strong>${fmtDay(due)}${why}</strong></div><div><small>当前交稿节点</small><strong>${fmtDay(state.date)}</strong></div><div><small>原计划</small><strong>${fmtDay(baseline?.latestFinish)}</strong></div></div>
+ <div class="node-state-line"><span class="pill ${accepted?'green':state.bucket==='overdue'?'orange':''}">${accepted?'已验收':safe(({'pending':'等待交稿','submitted':'已提交待验收','revision':'需修改'})[state.status]||'等待交稿')}</span>${state.hasContact?'<span class="muted">本轮已联系</span>':''}</div>
+ <form id="node-form"><div class="form-grid"><div class="field"><label>约定交稿日期</label><input type="date" name="promisedDelivery" value="${escAttr(st.promisedDelivery||'')}"></div><div class="field"><label>人工最晚日期</label><input type="date" name="dueBy" value="${escAttr(st.dueBy||'')}"></div></div>
+ <div class="field"><label>交付状态</label><select name="deliveryStatus"><option value="pending" ${state.status==='pending'?'selected':''}>等待交稿</option><option value="submitted" ${state.status==='submitted'?'selected':''}>已提交待验收</option><option value="revision" ${state.status==='revision'?'selected':''}>需修改</option><option value="accepted" ${state.status==='accepted'?'selected':''}>已确认完成</option></select></div>
+ <div class="form-grid"><div class="field"><label>本次状态日期 / 验收日期</label><input type="date" name="eventDate" value="${escAttr(actual||st.submittedAt||'')}"></div><div class="field"><label>返修交稿日（仅“需修改”时生效）</label><input type="date" name="revisionDue" value="${escAttr(activeRevision?.dueDate||'')}"></div></div>
+ <div class="field"><label>备注</label><input name="deliveryNote" maxlength="200" value=""></div></form>
+ ${(history||contacts)?`<div class="history-list">${history}${contacts}</div>`:''}`,
+ `<button class="btn" data-action="reminder" data-step="${st.id}">提醒设置</button><button class="btn" data-action="mark-contact" data-step="${st.id}">已联系</button><button class="btn" data-action="new-revision" data-step="${st.id}">追加返修</button><button class="btn primary" data-action="save-node">保存</button>`);
+}
+function revisionModal(){
+ const ref=stepBy(ui.context?.stepId);if(!ref)return '';
+ return wrapModal('追加返修',`${ref.p.title} · ${ref.s.name}`,
+ `<form id="revision-form"><div class="field"><label>提出返修日期</label><input type="date" name="date" value="${todayISO()}" required></div><div class="field"><label>预计返修交稿日</label><input type="date" name="dueDate" value=""></div><div class="field"><label>返修内容</label><textarea name="note" rows="3" maxlength="500"></textarea></div><div class="field"><label>预计工期（天）</label><input type="number" name="days" value="2" min="1" max="365"></div></form><p class="help-note">已验收的环节会保留原完成记录，并另建返修工序。尚未验收的环节会新增一轮返修交付节点。</p>`,
+ `<button class="btn" data-action="close-modal">取消</button><button class="btn primary" data-action="save-revision">新增返修</button>`);
+}
+function backupModal(){return wrapModal('导出数据','数据只保存在此浏览器，请自行保存备份。',`<div class="rows"><button class="btn" data-action="export">下载本版 JSON 数据</button><button class="btn danger" data-action="clear-data">清空全部数据</button></div>`,`<button class="btn" data-action="close-modal">关闭</button>`)}
+
+function helpModal(){return wrapModal('使用说明','',`<div class="help-note"><p>① 先创建参展活动，填写收货 DDL。</p><p>② 创建制品，设置参与者、创作阶段和下印流程。</p><p>③ 赶稿日历可切换全部 / 主催 / 我的，分别筛选 DDL、交稿节点、提醒与个人工作。</p><p>④ 我的进度显示当天的个人任务和需要关注的交稿事项；点击「记录进度」输入今日产出和用时。</p><p>⑤ 外部画师与作者不需使用网页，所有状态由你自己登记，提醒仅在网页内显示。</p></div>`,`<button class="btn primary" data-action="close-modal">关闭</button>`)}
+
+function renderModal(){const root=document.getElementById('modal-root');if(!ui.modal){root.innerHTML='';return}root.innerHTML=ui.modal==='event'?eventModal():ui.modal==='event-impact'?eventImpactModal():ui.modal==='piece-stage'?pieceStageModal():ui.modal==='product'?productModal():ui.modal==='track'?trackModal():ui.modal==='step'?stepModal():ui.modal==='log'?logModal():ui.modal==='backup'?backupModal():ui.modal==='help'?helpModal():ui.modal==='reminder'?reminderModal():ui.modal==='day'?calendarDayModal():ui.modal==='ddl'?ddlModal():ui.modal==='node'?nodeModal():ui.modal==='revision'?revisionModal():''}
+function readForm(id){const form=document.getElementById(id);if(!form||!form.reportValidity())return null;return Object.fromEntries(new FormData(form).entries())}
+
+
+
+function saveStepModal(){const values=readForm('step-form');if(!values)return;const ctx=ui.context||{},ref=ctx.stepId?stepBy(ctx.stepId):null,p=ref?.p||productBy(ctx.productId);if(!p)return;const targetList=ref?(ref.shared?p.shared:ref.t.steps):(ctx.trackId==='shared'?p.shared:p.tracks.find(t=>t.id===ctx.trackId)?.steps);if(!targetList)return;const kind=values.kind||'fixed';if(ref&&isShippingStep(ref.s)&&kind!=='external'){notify('运输必须保留为物流工序，只能修改预计天数');return}if(!ref&&ctx.trackId==='shared'&&/^(运输|快递运输|物流运输)$/.test(values.name.trim())){notify('运输节点已存在，请编辑现有物流工序');return}if(ctx.trackId==='shared'&&kind==='quantity'){notify('下印环节暂不支持数量型，请添加到独立工作路线');return}const s=ref?.s||mkStep(values.name,kind);s.name=values.name.trim();s.kind=kind;s.remindDays=Math.max(0,Math.floor(nval(values.remindDays,7)));s.nodeColor=values.nodeColor||'blue';s.remindColor=values.remindColor||'yellow';s.isMine=!!values.isMine;if(!s.name){notify('请输入环节名称');return}if(ref&&isShippingStep(ref.s))s.name='运输';if(kind==='quantity'){
+ s.plannedDays=values.plannedDays===''?null:Math.max(1,Math.ceil(nval(values.plannedDays,1)));
+ s.unit=(values.unit||'P').trim();s.total=Math.max(0,nval(values.total));s.done=Math.max(0,nval(values.done));const base=s.unit==='字'?1000:1;s.unitMinutes=values.rate===''?null:Math.max(0,nval(values.rate))*60/base; if(!ref)s.completed=false;
+ if(s.pieceStage){s.total=p.pieces?.length||0;s.done=0;s.unit='张'}
+}else{s.days=Math.max(1,Math.round(nval(values.days,1)));const wasDone=!!s.completed;s.completed=!!values.completed;if(wasDone&&!s.completed){(s.completionHistory ||= []).push({date:todayISO(),type:'reopened',previousCompletedAt:s.completedAt||null});s.completedAt=null;s.completionSourceLogId=null}else if(!wasDone&&s.completed){s.completedAt=todayISO();s.completionSourceLogId=null}s.pieceStage=null}
+ if(!ref){const shippingIndex=ctx.trackId==='shared'?targetList.findIndex(isShippingStep):-1;if(shippingIndex>=0)targetList.splice(shippingIndex,0,s);else targetList.push(s)}persist();closeModal();render();notify('工序已保存，日期已重新计算')}
+function addExample(){if(data.events.length||data.products.length){if(!confirm('载入演示案例将清空当前数据，确定继续吗？'))return}const e={id:uuid(),name:'春日同人 ONLY（演示）',mode:'official',ddl:addDay(todayISO(),45)};const novel=mkTemplate('novel',42000),comic=mkTemplate('comic',24);novel.tracks[0].steps.find(s=>s.kind==='quantity').done=12000;comic.tracks[0].steps.find(s=>s.name==='分镜').done=8;data={baselines:{},schemaVersion:4,events:[e],products:[{id:uuid(),type:'novel',title:'《星光》小说本',eventId:e.id,handoffBufferDays:1,...novel},{id:uuid(),type:'comic',title:'《雨天》漫本',eventId:e.id,handoffBufferDays:1,...comic}],logs:[]};ui.view='calendar';ui.month=parseDay(todayISO());ui.selectedDate=todayISO();persist();closeModal();render();notify('已载入演示案例（可以随时清空）')}
+function exportData(){const blob=new Blob([JSON.stringify({format:'zhishang-fandom-ddl-v08',savedAt:new Date().toISOString(),data},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`纸上赶稿_备份_${todayISO()}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);notify('数据备份已下载')}
+function handleAction(node){const action=node.dataset.action,ids=node.dataset;
+ if(action==='overlay'){closeModal();return}
+ if(action==='close-modal'){closeModal();return}
+ if(action==='view'){if(ids.view==='progress'&&ui.view!=='progress')ui.selectedDate=todayISO();ui.view=ids.view;if(ids.view==='products'&&!productBy(ui.selectedProduct))ui.selectedProduct=data.products[0]?.id||null;if(ids.view==='events'&&!eventBy(ui.selectedEvent))ui.selectedEvent=data.events[0]?.id||null;render();return}
+ if(action==='select-product'){ui.selectedProduct=ids.product;ui.view='products';ui.expandedTracks=new Set();ui.manageTracks=new Set();ui.manageProduction=false;ui.showPieces=false;render();return}
+ if(action==='select-event'){ui.selectedEvent=ids.event;ui.view='events';render();return}
+ if(action==='open-calendar-day'){ui.selectedDate=ids.day;openModal('day',{day:ids.day});return}
+ if(action==='today-progress'){ui.selectedDate=todayISO();render();return}
+ if(action==='progress-prev'||action==='progress-next'){ui.selectedDate=addDay(ui.selectedDate,action==='progress-prev'?-1:1);render();return}
+ if(action==='detail'){ui.selectedProduct=ids.product;ui.view='products';render();return}
+ if(action==='month-prev'||action==='month-next'){const direction=action==='month-prev'?-1:1;if(window.innerWidth<=860&&ui.mobileMode==='week'){ui.selectedDate=addDay(ui.selectedDate,7*direction);ui.month=parseDay(ui.selectedDate)}else{ui.month=new Date(ui.month.getFullYear(),ui.month.getMonth()+direction,1,12);ui.selectedDate=dateISO(ui.month)}render();return}
+ 
+ if(action==='calendar-filter'){
+  if(!['all','organizer','mine'].includes(ids.mode))return;
+  ui.calendarMode=ids.mode;render();return;
+ }
+ if(action==='set-mobile-mode'){
+  if(!['month','week'].includes(ids.mode))return;
+  ui.mobileMode=ids.mode;
+  if(ui.mobileMode==='week'){const d=parseDay(ui.selectedDate); if(d.getFullYear()!==ui.month.getFullYear()||d.getMonth()!==ui.month.getMonth())ui.selectedDate=dateISO(ui.month)}
+  render();return;
+ }
+ if(action==='open-ddl-product'){ui.selectedProduct=ids.product;ui.view='products';ui.manageProduction=false;ui.manageTracks=new Set();closeModal();render();return}
+ if(action==='open-ddl-event'){ui.selectedEvent=ids.event;ui.view='events';closeModal();render();return}
+ if(action==='toggle-followups'){ui.showAllFollowups=!ui.showAllFollowups;render();return}
+ if(action==='select-day'){ui.selectedDate=ids.day;render();return}
+ if(action==='new-event'){openModal('event');return}
+ if(action==='edit-event'){openModal('event',{id:ids.event});return}
+ if(action==='save-event'){
+ const v=readForm('event-form');if(!v)return;if(!v.name.trim())return notify('活动名称不能为空');const edit=ui.context?.id?eventBy(ui.context.id):null;const isFirst=data.events.length===0;
+ if(edit){if(edit.ddl!==v.ddl&&data.products.some(p=>p.eventId===edit.id)){openModal('event-impact',{id:edit.id,draft:{name:v.name.trim(),mode:v.mode,ddl:v.ddl}});return;}Object.assign(edit,{name:v.name.trim(),mode:v.mode,ddl:v.ddl});ui.selectedEvent=edit.id;}else{const added={id:uuid(),name:v.name.trim(),mode:v.mode||'official',ddl:v.ddl};data.events.push(added);ui.selectedEvent=added.id;}persist();closeModal();render();notify(edit?'活动已更新':'活动已创建');if(isFirst&&data.products.length===0)openModal('product',{draft:{type:'novel',count:60000,eventId:data.events[0].id}});return}
+ if(action==='edit-event-back'){const ctx=ui.context;if(ctx?.id){openModal('event',{id:ctx.id});return}}
+ if(action==='confirm-event-impact'){
+  const ctx=ui.context,e=eventBy(ctx?.id);if(!e||!ctx.draft)return;
+  Object.assign(e,ctx.draft);ui.selectedEvent=e.id;persist();closeModal();render();notify('已确认调整收货 DDL；原计划和实际记录保留');return;
+ }
+ if(action==='delete-event'){const e=eventBy(ids.event);if(!e)return;const used=data.products.filter(p=>p.eventId===e.id).length;if(used){notify('此活动已有制品关联。请先调整制品关联，再删除活动。');return}if(!confirm(`删除活动「${e.name}」？`))return;data.events=data.events.filter(x=>x.id!==e.id);ui.selectedEvent=data.events[0]?.id||null;persist();render();return}
+ if(action==='new-product'){if(!data.events.length){openModal('event');notify('先创建一个参展活动');return}openModal('product',{draft:{type:'novel',count:60000,eventId:data.events[0].id}});return}
+ if(action==='edit-product'){openModal('product',{id:ids.product});return}
+ if(action==='choose-type'){const f=document.getElementById('product-form');const d=ui.context.draft;d.title=f?.elements.title.value||'';d.eventId=f?.elements.eventId.value||data.events[0]?.id;d.type=ids.type;d.count={novel:60000,comic:32,anthology:1,artbook:8,goods:1}[ids.type];renderModal();return}
+ if(action==='save-product'){const v=readForm('product-form');if(!v)return;const edit=ui.context?.id?productBy(ui.context.id):null;const type=ui.context?.draft?.type||edit?.type||'novel';if(edit){edit.title=v.title.trim();edit.eventId=v.eventId;edit.handoffBufferDays=Math.max(0,Math.floor(nval(v.handoffBufferDays,1)));ui.selectedProduct=edit.id}else{const built=mkTemplate(type,Math.max(1,nval(v.count,8)));const p={id:uuid(),type,title:v.title.trim(),eventId:v.eventId,handoffBufferDays:Math.max(0,Math.floor(nval(v.handoffBufferDays,1))),...built};data.products.push(p);ui.selectedProduct=p.id}persist();closeModal();ui.view='products';render();notify(edit?'制品已更新':'制品已创建，可继续修改流程');return}
+ if(action==='delete-product'){const p=productBy(ids.product);if(!p||!confirm(`删除「${p.title}」及其所有赶稿记录？此操作不可撤销。`))return;const stepIds=[...p.tracks.flatMap(t=>t.steps),...p.shared].map(s=>s.id);data.logs=data.logs.filter(l=>!stepIds.includes(l.stepId));data.products=data.products.filter(x=>x.id!==p.id);delete data.baselines[p.id];ui.selectedProduct=data.products[0]?.id||null;ui.view='products';persist();render();return}
+ if(action==='toggle-track'){ui.expandedTracks.has(ids.track)?ui.expandedTracks.delete(ids.track):ui.expandedTracks.add(ids.track);render();return}
+ if(action==='toggle-manage-track'){ui.manageTracks.has(ids.track)?ui.manageTracks.delete(ids.track):ui.manageTracks.add(ids.track);render();return}
+ if(action==='toggle-production-manage'){ui.manageProduction=!ui.manageProduction;render();return}
+ if(action==='toggle-pieces'){ui.showPieces=!ui.showPieces;render();return}
+ if(action==='add-track'){openModal('track',{productId:ids.product});return}
+ if(action==='edit-track'){openModal('track',{productId:ids.product,trackId:ids.track});return}
+ if(action==='save-track'){const v=readForm('track-form');if(!v)return;const p=productBy(ui.context.productId),t=p?.tracks.find(x=>x.id===ui.context.trackId);if(!p)return;if(t){if(p.type==='anthology'){t.category=t.category||(t.steps.some(s=>['草稿','上色','细化'].includes(s.name))?'illustration':'text')}if(p.type==='anthology'&&v.template!==t.category){if(!confirm('改变内容类型会重置这位参与者的制作阶段及原有进度，是否继续？'))return;const ids=t.steps.map(x=>x.id);data.logs=data.logs.filter(l=>!ids.includes(l.stepId));t.steps=participantSteps(v.template);t.category=v.template;}t.owner=(v.owner||'主催').trim();t.isMine=!!v.isMine;t.name=p.type==='anthology'?`${t.category==='illustration'?'绘图内容':'文本内容'}-${t.owner}`:v.name.trim()}else{const preset=v.template||'custom';const name=p.type==='anthology'?`${preset==='illustration'?'绘图内容':'文本内容'}-${(v.owner||'作者A').trim()}`:v.name.trim();const steps=participantSteps(preset);const track=mkTrack(name,(v.owner||'主催').trim(),steps);track.isMine=!!v.isMine;if(p.type==='anthology')track.category=preset;p.tracks.push(track)}persist();closeModal();render();return}
+ if(action==='delete-track'){const p=productBy(ui.context.productId),t=p?.tracks.find(x=>x.id===ui.context.trackId);if(!p||!t||!confirm(`删除路线「${t.name}」及其相关记录？`))return;const ss=t.steps.map(s=>s.id);data.logs=data.logs.filter(l=>!ss.includes(l.stepId));p.tracks=p.tracks.filter(x=>x.id!==t.id);persist();closeModal();render();return}
+ if(action==='add-step'){openModal('step',{productId:ids.product,trackId:ids.track});return}
+ if(action==='edit-step'){const ref=stepBy(ids.step);if(!ref)return;openModal('step',{stepId:ids.step,productId:ref.p.id,trackId:ref.shared?'shared':ref.t.id});return}
+ if(action==='save-step'){saveStepModal();return}
+ if(action==='delete-step'){const ref=stepBy(ids.step);if(!ref||!confirm(`删除工序「${ref.s.name}」及其赶稿记录？`))return;if(ref.shared){if(isShippingStep(ref.s)){notify('请在运输工序中修改预计天数，不能删除物流节点');return;}ref.p.shared=ref.p.shared.filter(s=>s.id!==ref.s.id);}else ref.t.steps=ref.t.steps.filter(s=>s.id!==ref.s.id);data.logs=data.logs.filter(l=>l.stepId!==ref.s.id);persist();render();return}
+ if(action==='move-step'){const p=productBy(ids.product);if(!p)return;const arr=ids.track==='shared'?p.shared:p.tracks.find(t=>t.id===ids.track)?.steps;if(!arr)return;const i=arr.findIndex(x=>x.id===ids.step),j=i+nval(ids.dir);if(i>=0&&j>=0&&j<arr.length){if(ids.track==='shared'&&(isShippingStep(arr[i])||isShippingStep(arr[j]))){notify('运输必须是下印流程最后一项，不能移动');return;}[arr[i],arr[j]]=[arr[j],arr[i]];persist();render()}return}
+ if(action==='toggle-step'){const ref=stepBy(ids.step);if(!ref)return;if(ref.s.pieceStage){notify('逐张画稿请在每张图的阶段按钮中确认完成日期');return;}if(doneStep(ref.p,ref.s)&&ref.s.kind==='quantity'&&stepDone(ref.p,ref.s)>=nval(ref.s.total)){notify('该环节已达到目标数量；如需恢复，请先调整目标数量或完成量');return}ref.s.completed=!ref.s.completed;ref.s.completedAt=ref.s.completed?todayISO():null;persist();closeModal();render();notify(ref.s.completed?'已标记完成':'已恢复');return}
+ if(action==='add-piece'){const p=productBy(ids.product);if(!p)return;const name=prompt('新画稿名称：',`插画 ${String(p.pieces.length+1).padStart(2,'0')}`);if(name===null||!name.trim())return;p.pieces.push({id:uuid(),name:name.trim(),sketch:false,color:false,refine:false});for(const t of p.tracks)for(const s of t.steps)if(s.pieceStage)s.total=p.pieces.length;persist();render();return}
+ if(action==='delete-piece'){
+  const p=productBy(ids.product);if(!p||p.pieces.length<=1){notify('至少保留一张画稿');return}
+  const piece=p.pieces.find(x=>x.id===ids.piece);if(!piece)return;
+  const affected=data.logs.filter(l=>l.productId===p.id&&(l.pieceIds||[]).includes(piece.id));
+  if(!confirm(`删除「${piece.name}」？关联的 ${affected.length} 条阶段日志会归档，不再计入当前进度。`))return;
+  (p.archivedPieces ||= []).push({...piece,archivedAt:todayISO()});
+  for(const log of affected){(p.archivedPieceLogs ||= []).push({...log,archivedForPiece:piece.id});
+    log.pieceIds=log.pieceIds.filter(id=>id!==piece.id);log.amount=log.pieceIds.length;
+    if(!log.pieceIds.length)data.logs=data.logs.filter(l=>l.id!==log.id);
+  }
+  p.pieces=p.pieces.filter(x=>x.id!==piece.id);syncPieceProgress(p);persist();render();return;
+ }
+ if(action==='toggle-piece'){
+  const p=productBy(ids.product),piece=p?.pieces.find(x=>x.id===ids.piece),phase=ids.phase;
+  if(!piece||!['sketch','color','refine'].includes(phase))return;
+  const manual=piece.manualPhases?.[phase],logged=pieceStageLogDate(p,piece.id,phase);
+  if(manual){delete piece.manualPhases[phase];syncPieceProgress(p);persist();render();notify(logged?'已撤销手动确认；赶稿日志记录仍有效':'已撤销手动确认');return;}
+  openModal('piece-stage',{productId:p.id,pieceId:piece.id,phase});return;
+ }
+ if(action==='save-piece-stage'){
+  const v=readForm('piece-stage-form'),ctx=ui.context||{},p=productBy(ctx.productId),piece=p?.pieces.find(x=>x.id===ctx.pieceId);
+  if(!v||!p||!piece)return;
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(v.date)||dateISO(parseDay(v.date))!==v.date||v.date>todayISO())return notify('完成日期无效或晚于今天');
+  (piece.manualPhases ||= {})[ctx.phase]=v.date;
+  syncPieceProgress(p);persist();closeModal();render();notify('阶段完成日期已保存');return;
+ }
+ if(action==='open-node'){openModal('node',{stepId:ids.step});return}
+ if(action==='calendar-entry'){if(ids.kind==='deadline'){openModal('ddl',{productId:ids.product})}else if(ids.kind==='node'||ids.kind==='reminder'){openModal('node',{stepId:ids.step})}else openModal('log',{stepId:ids.step,date:ids.day});return}
+ if(action==='reminder'){const ref=stepBy(ids.step);if(!ref||isMineStep(ref.t,ref.s))return notify('本人工作请在「我的进度」中管理');openModal('reminder',{stepId:ids.step});return}
+if(action==='mark-contact'){
+  const ref=stepBy(ids.step||ui.context?.stepId);if(!ref)return;
+  const sch=scheduleProduct(ref.p),row=sch.tracks.flatMap(x=>x.steps).concat(sch.shared).find(x=>x.step?.id===ref.s.id);
+  const target=row?.shipping?row?.dispatchDate:row?.end;
+  if(!target)return notify('尚无可用交稿日期');
+  try{FandomFollowUpP1.recordContact(ref.s,todayISO(),'',uuid(),target,!!row.shipping);persist();closeModal();render();notify('已记录本轮联系；交稿状态不变');}catch(err){notify(err.message)}
+  return;
+}
+if(action==='new-revision'){openModal('revision',{stepId:ids.step||ui.context?.stepId});return}
+if(action==='save-revision'){
+  const v=readForm('revision-form');if(!v)return;const ref=stepBy(ui.context?.stepId);if(!ref)return;
+  const st=ref.s,accepted=FandomFollowUpP1.statusOf(st)==='accepted';
+  if(isShippingStep(st))return notify('运输节点不支持返修');
+  if(accepted){
+    const target=ref.shared?ref.p.shared:ref.t.steps,index=target.findIndex(s=>s.id===st.id);
+    const revisionMine=isMineStep(ref.t,st);
+    const child=mkStep(st.name+' · 返修'+((st.revisionChildren||0)+1),revisionMine?'fixed':'external',{days:Math.max(1,Math.ceil(nval(v.days,2))),revisionOf:st.id,completed:false,deliveryStatus:'pending',promisedDelivery:v.dueDate||null,requestedAt:v.date,remindDays:st.remindDays,nodeColor:st.nodeColor,remindColor:st.remindColor,isMine:revisionMine});
+    target.splice(index+1,0,child);st.revisionChildren=(st.revisionChildren||0)+1;
+    (st.deliveryHistory ||= []).push({id:uuid(),type:'revision_child_created',date:v.date,note:v.note||'',childStepId:child.id});
+  }else{
+    FandomFollowUpP1.requestRevision(st,{date:v.date,dueDate:v.dueDate||null,note:v.note||'',id:uuid()});
+  }
+  persist();closeModal();render();notify('返修已增加，原交付历史保留');return;
+}
+if(action==='save-node'){
+  const v=readForm('node-form');if(!v)return;const ref=stepBy(ui.context?.stepId);if(!ref)return;
+  const st=ref.s,shipping=isShippingStep(st);
+  if(shipping){ref.p.actualDispatch=v.actualFinished||null;st.completed=!!v.completed;st.completedAt=st.completed?(v.actualFinished||null):null;if(!st.completed)ref.p.actualDispatch=null;}
+  else{
+    const old=FandomFollowUpP1.statusOf(st),next=v.deliveryStatus||'pending';
+    if(old==='accepted' && next!=='accepted')return notify('已验收的内容请用“追加返修”，原完成记录不会删除');
+    st.promisedDelivery=v.promisedDelivery||null;st.dueBy=v.dueBy||null;
+    const date=v.eventDate||null,note=(v.deliveryNote||'').trim();
+    if(next==='revision'){
+      const last=FandomFollowUpP1.currentRevision(st);
+      if(old==='revision'&&last){
+        if(last.dueDate!==(v.revisionDue||null)){(st.deliveryHistory ||= []).push({id:uuid(),type:'revision_due_changed',date:todayISO(),note:`${last.dueDate||'未定'} → ${v.revisionDue||'未定'}`});last.dueDate=v.revisionDue||null;}
+      }else FandomFollowUpP1.requestRevision(st,{date:date||todayISO(),dueDate:v.revisionDue||null,note,id:uuid()});
+    }else if(old!==next){
+      FandomFollowUpP1.updateDelivery(st,next,date,note,uuid());
+      if(next==='submitted')st.submittedAt=date;
+    }else if(next==='accepted' && date!==st.completedAt){
+      (st.deliveryHistory ||= []).push({id:uuid(),type:'accepted_date_corrected',date:todayISO(),note:`${st.completedAt||'未知'} → ${date||'未知'}`});st.completedAt=date;
+    }
+  }
+  persist();closeModal();render();notify('交稿节点已更新');return;
+}
+ if(action==='confirm-baseline'){
+   const p=productBy(ids.product),e=eventBy(p?.eventId);if(!p||!e)return;
+   if(data.baselines[p.id]&&!confirm('重新确认会覆盖该制品的原计划基线。确定更新吗？'))return;
+   try{data.baselines[p.id]=FandomP0Bridge.baselineFor(p,e,data.logs,todayISO());persist();render();notify('原计划基线已保存');}
+   catch(err){notify('无法确认原计划：'+err.message)}return;
+ }
+ if(action==='save-reminder'){const v=readForm('reminder-form');if(!v)return;const ref=stepBy(ui.context?.stepId);if(!ref)return;ref.s.remindDays=Math.max(0,Math.floor(nval(v.days,7)));ref.s.nodeColor=v.nodeColor||'blue';ref.s.remindColor=v.remindColor||'yellow';persist();closeModal();render();notify('提前提醒已更新');return}
+ if(action==='task'){if(!ids.step){ui.selectedProduct=ids.product;ui.view='products';render();return}openModal('log',{stepId:ids.step,date:ids.day||todayISO()});return}
+ if(action==='save-log'){const v=readForm('log-form');if(!v)return;const ref=stepBy(ui.context.stepId);if(!ref)return;if(v.date>todayISO())return notify('实际进度不能填写未来日期；未来工作请在日历中查看计划');const hours=v.hours===''?0:Math.max(0,nval(v.hours));if(hours>1000)return notify('请核对今日用时');const minutes=hours*60;let amount=ref.s.kind==='quantity'?Math.max(0,nval(v.amount)):0;let pieceIds=[];
+ if(ref.s.kind==='quantity'&&!ref.s.pieceStage&&stepDone(ref.p,ref.s)+amount>nval(ref.s.total)){
+  if(!confirm(`预计总量为 ${cleanN(ref.s.total)} ${ref.s.unit||''}，此次录入后累计将超过目标。确定仍按实际产出保存吗？`))return;
+ }
+ if(ref.s.pieceStage){const avail=ref.p.pieces.filter(p=>!p[ref.s.pieceStage]);const k=Math.min(avail.length,Math.floor(amount));pieceIds=avail.slice(0,k).map(p=>p.id);if(amount>k)notify('超出剩余画稿数量，已按实际可完成数量记录');amount=k}const wasDone=!!ref.s.completed;
+ const completedByLog=!!v.complete&&!wasDone&&!ref.s.pieceStage;
+ if(!ref.s.pieceStage){
+  if(v.complete){if(!wasDone){ref.s.completed=true;ref.s.completedAt=v.date||todayISO();}}
+  else if(ref.s.completed){(ref.s.completionHistory ||= []).push({date:todayISO(),type:'reopened',previousCompletedAt:ref.s.completedAt||null});ref.s.completed=false;ref.s.completedAt=null;ref.s.completionSourceLogId=null;}
+ }
+ const log={id:uuid(),date:v.date||todayISO(),productId:ref.p.id,trackId:ref.t?.id||null,stepId:ref.s.id,minutes,amount,note:(v.progressText||'').trim(),pieceIds,completedByLog,createdAt:Date.now()};data.logs.push(log);if(completedByLog)ref.s.completionSourceLogId=log.id;if(ref.s.pieceStage)syncPieceProgress(ref.p);persist();ui.month=parseDay(log.date);ui.selectedDate=log.date;if(!['progress','products'].includes(ui.view))ui.view='calendar';closeModal();render();notify('进度已保存');return}
+ if(action==='delete-log'){const log=data.logs.find(l=>l.id===ids.log);if(!log||!confirm('删除这条赶稿记录？'))return;const ref=stepBy(log.stepId);data.logs=data.logs.filter(x=>x.id!==log.id);
+ if(ref?.s.pieceStage)syncPieceProgress(ref.p);
+ if(ref&&ref.s.completionSourceLogId===log.id){ref.s.completed=false;ref.s.completedAt=null;ref.s.completionSourceLogId=null;}persist();render();return}
+ if(action==='backup'){openModal('backup');return}
+ if(action==='help'){openModal('help');return}
+ if(action==='export'){exportData();return}
+ if(action==='clear-data'){if(!confirm('清空所有活动、制品和赶稿记录？此操作不能撤销。'))return;data={events:[],products:[],logs:[],baselines:{},schemaVersion:4};persist();closeModal();ui.view='calendar';render();return}
+ if(action==='sample'){addExample();return}
+}
+document.addEventListener('click',e=>{const el=e.target.closest('[data-action]');if(!el)return;if(el.dataset.action==='overlay'&&e.target!==el)return;e.stopPropagation();handleAction(el)});
+document.addEventListener('change',async e=>{if(e.target.id==='progress-day'){ui.selectedDate=e.target.value||todayISO();render();return}if(e.target.id==='step-kind'){const kind=e.target.value;document.getElementById('qty-fields').classList.toggle('hide',kind!=='quantity');document.getElementById('duration-fields').classList.toggle('hide',kind==='quantity')}if(e.target.name==='isMine'&&e.target.closest('#step-form'))document.getElementById('reminder-settings')?.classList.toggle('hide',e.target.checked)
+});
+render();
+if(!data.events.length&&!data.products.length)setTimeout(()=>openModal('event'),200);
+</script>
+</body>
+</html>
