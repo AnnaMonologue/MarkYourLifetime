@@ -20,3 +20,4 @@
 - [v0.8 Alpha 修复记录](../../projects/fandom-ddl-calendar/v0.8-alpha/FIXES_v0.8.md) — v0.7 审计问题的修复范围、实际结果与验证边界。
 
 - [水墨冷峻 UI v0.9](../../projects/fandom-ddl-calendar/v0.9-ink/README.md) — 在 v0.8 逻辑不变前提下的独立水墨风格界面；[直接查看 HTML](../../projects/fandom-ddl-calendar/v0.9-ink/index.html)。
+- [v1.2 横向交付时间线与参展资料提交 DDL](../../projects/fandom-ddl-calendar/v1.2-timeline/README.md) — 制品概览按稿件/印厂/邮寄三段展示日期，活动独立资料提交 DDL 联动日历。
