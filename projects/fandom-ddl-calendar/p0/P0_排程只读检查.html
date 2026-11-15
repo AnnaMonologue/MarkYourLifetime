@@ -1,0 +1,318 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>纸上赶稿 · P0 排程检查</title>
+<style>
+:root{color-scheme:light;font-family:system-ui,-apple-system,"Microsoft YaHei",sans-serif;background:#fafaf8;color:#232923}
+*{box-sizing:border-box}body{margin:0}main{max-width:1080px;margin:0 auto;padding:32px 24px 80px}
+h1{font-size:26px;letter-spacing:-.5px;margin:3px 0 8px}h2{font-size:19px;margin:0 0 8px}p{line-height:1.65;margin:5px 0 12px}small,.muted{color:#667269;font-size:13px}
+header{padding-bottom:20px;border-bottom:1px solid #e1e5df;margin-bottom:24px}.eyebrow{font-size:12px;color:#587864;font-weight:700;letter-spacing:1px}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:end;margin:16px 0 22px}label{font-size:13px;color:#445047;display:block;margin-bottom:5px}
+button,.filebutton,input{font:inherit}button,.filebutton{border:1px solid #d7ded8;border-radius:9px;background:white;color:#24322a;padding:10px 15px;font-weight:600;cursor:pointer;display:inline-block}
+button:hover,.filebutton:hover{border-color:#7f9d86}.primary{background:#286b4e;color:#fff;border-color:#286b4e}input[type=date]{padding:9px 10px;border:1px solid #d7ded8;border-radius:9px;background:white}
+.filebutton input{display:none}.notice{border:1px solid #eadbb2;border-radius:10px;padding:12px 15px;background:#fffdf6;color:#775828;font-size:13px}
+.card{border:1px solid #e0e5df;background:white;padding:20px;margin:16px 0;border-radius:12px;box-shadow:0 2px 8px #162c1707}
+.summary{display:flex;gap:14px;flex-wrap:wrap;margin:16px 0}.metric{border:1px solid #e5eae3;border-radius:8px;padding:10px 14px;min-width:130px;flex:1}.metric strong{display:block;font-size:20px;margin-top:5px}
+.badge{display:inline-block;padding:3px 8px;background:#ebf3ed;border-radius:6px;color:#406b4a;font-size:12px}.bad{background:#f9e9e9;color:#a03c43}.warn{background:#fff3d5;color:#886321}
+.issue{border-left:3px solid #d2a842;background:#fffbf2;padding:9px 13px;margin:8px 0;font-size:13px;line-height:1.6}.issue.critical{border-left-color:#cb535e;background:#fff7f7}
+.scroll{max-width:100%;overflow:auto}table{border-collapse:collapse;width:100%;font-size:13px;margin:10px 0 0}td,th{text-align:left;padding:11px 9px;border-top:1px solid #ebeeea;white-space:nowrap}th{color:#607167;font-weight:600;background:#fcfdfb}td small{display:block}.empty{text-align:center;color:#79837c;padding:50px 10px}
+@media(max-width:620px){main{padding:20px 13px 50px}h1{font-size:23px}.card{padding:13px}.metric{min-width:43%}.controls>*{flex-grow:1}button,.filebutton{font-size:14px;text-align:center}}
+</style></head><body><main><header><div class="eyebrow">纸上赶稿 · 算法验证</div><h1>排程检查</h1><p class="muted">读取 v0.3.1 JSON 备份，分别显示最晚允许日期、最新预测及冲突原因。不修改网页、不保存导入数据。</p></header>
+<section><div class="controls"><div><label for="today">计算日期</label><input id="today" type="date"></div><label class="filebutton">读取 JSON 备份<input id="file" type="file" accept=".json,application/json"></label><button id="demo">查看演示数据</button></div>
+<div class="notice">这是<strong>只读实验工具</strong>。旧版数量任务没有稳定的阶段工期时，结果会标记「暂定」，不会把临时一天占位当作真实赶稿速度。旧完成记录缺日期时，不会自行补填。</div></section>
+<section id="result"><p class="empty">选择备份文件，或打开演示数据。</p></section>
+</main>
+<script>
+/* 纸上赶稿 P0 — Pure scheduling core, browser + Node (CommonJS), 2026-11-15.
+   No DOM, no localStorage, no mutation of input. Dates are calendar days, not elapsed hours.
+   This is a separately testable module, NOT a drop-in replacement for v0.3.1. */
+(function (root, build) {
+  const api = build();
+  if (typeof module === 'object' && module.exports) module.exports = api;
+  if (root) root.FandomSchedulerP0 = api;
+})(typeof globalThis !== 'undefined' ? globalThis : this, function () {
+  'use strict';
+  const DAY = 86400000;
+  function parseDate(s) {
+    if (typeof s !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(s)) throw new Error('日期必须是 YYYY-MM-DD: ' + s);
+    const t = Date.parse(s + 'T00:00:00.000Z');
+    if (!Number.isFinite(t) || new Date(t).toISOString().slice(0, 10) !== s) throw new Error('非法日期: ' + s);
+    return t;
+  }
+  function dateOf(t) { return new Date(t).toISOString().slice(0, 10); }
+  function addDate(s, n) { if (!Number.isInteger(n)) throw new Error('日期偏移必须是整数'); return dateOf(parseDate(s) + n * DAY); }
+  function daysBetween(a, b) { return (parseDate(b) - parseDate(a)) / DAY; }
+  function maxDate(...xs) { return xs.reduce((a, b) => !a || b > a ? b : a, null); }
+  function minDate(...xs) { return xs.reduce((a, b) => !a || b < a ? b : a, null); }
+  function asDate(value) { return value == null || value === '' ? null : (parseDate(value), value); }
+  function nonneg(value, label) { if (!Number.isInteger(value) || value < 0) throw new Error(label + '必须为非负整数'); return value; }
+
+  // Graph convention: each step occupies 1+ full calendar dates, a successor starts the next day.
+  // A terminal step must finish by production-ready deadline. Milestones shipping/receipt are separate.
+  function plan(req) {
+    if (!req || typeof req !== 'object') throw new Error('缺少排程输入');
+    const now = asDate(req.today), receipt = asDate(req.receiptDeadline);
+    if (!now || !receipt) throw new Error('需要今天和收货 DDL');
+    const transit = nonneg(req.transitDays, '运输提前天数');
+    const buffer = nonneg(req.handoffBufferDays, '寄出前缓冲天数');
+    const latestDispatch = addDate(receipt, -transit);
+    const latestProductReady = addDate(latestDispatch, -buffer);
+    const steps = req.steps || [];
+    if (!Array.isArray(steps)) throw new Error('工序需要数组');
+    const byId = new Map(), succ = new Map(), indegree = new Map();
+    for (const s of steps) {
+      if (!s || typeof s.id !== 'string' || !s.id.trim() || byId.has(s.id)) throw new Error('工序 ID 为空或重复');
+      if (!Number.isInteger(s.days) || s.days < 1) throw new Error('工序预计工期至少一天: ' + s.id);
+      if (s.predecessors && !Array.isArray(s.predecessors)) throw new Error('前置工序必须是数组');
+      for (const k of ['actualFinished', 'promisedDelivery', 'dueBy']) asDate(s[k]);
+      byId.set(s.id, s); succ.set(s.id, []); indegree.set(s.id, 0);
+    }
+    for (const s of steps) {
+      const seen = new Set();
+      for (const p of (s.predecessors || [])) {
+        if (!byId.has(p) || p === s.id || seen.has(p)) throw new Error('未知/重复/自引用依赖: ' + s.id + ' → ' + p);
+        seen.add(p); succ.get(p).push(s.id); indegree.set(s.id, indegree.get(s.id) + 1);
+      }
+    }
+    const order = [], ready = steps.filter(s => !indegree.get(s.id)).map(s => s.id);
+    for (let i = 0; i < ready.length; i++) {
+      const id = ready[i]; order.push(id);
+      for (const child of succ.get(id)) {
+        indegree.set(child, indegree.get(child) - 1);
+        if (!indegree.get(child)) ready.push(child);
+      }
+    }
+    if (order.length !== steps.length) throw new Error('工序依赖中存在循环');
+    const rows = Object.create(null), diagnostics = [];
+    const emit = (type, stepId, detail = {}) => diagnostics.push({type, stepId, ...detail});
+
+    // Reverse pass — completed steps must NOT be filtered out.
+    for (const id of [...order].reverse()) {
+      const s = byId.get(id);
+      let latest = succ.get(id).length
+        ? minDate(...succ.get(id).map(child => addDate(rows[child].latestStart, -1)))
+        : latestProductReady;
+      if (s.dueBy) latest = minDate(latest, s.dueBy);
+      const start = addDate(latest, -s.days + 1);
+      rows[id] = {
+        id, latestStart: start, latestFinish: latest, forecastStart: null,
+        forecastFinish: null, actualFinished: s.actualFinished || null,
+        completed: !!s.completed, forecastConfidence: 'none', slackDays: null,
+        latestProvisional: !!s.durationProvisional || succ.get(id).some(child => rows[child].latestProvisional)
+      };
+      if (s.promisedDelivery && s.promisedDelivery > latest)
+        emit('promise_after_latest', id, {days: daysBetween(latest, s.promisedDelivery), promised: s.promisedDelivery, latest});
+    }
+
+    // Forward pass — if completion time is missing, block downstream instead of pretending it finished today.
+    for (const id of order) {
+      const s = byId.get(id), row = rows[id];
+      if (s.completed) {
+        row.forecastFinish = s.actualFinished || null;
+        row.forecastConfidence = s.actualFinished ? 'actual' : 'unknown';
+        if (!s.actualFinished) emit('missing_actual_date', id);
+        else if (s.actualFinished > row.latestFinish)
+          emit('historically_late', id, {days: daysBetween(row.latestFinish, s.actualFinished)});
+        if (s.actualFinished) for (const pred of s.predecessors || []) {
+          const p = byId.get(pred), r = rows[pred];
+          if (!p.completed) emit('completed_before_predecessor', id, {predecessorId: pred});
+          else if (r.actualFinished && s.actualFinished <= r.actualFinished)
+            emit('actual_order_conflict', id, {predecessorId: pred});
+        }
+        continue;
+      }
+      if (s.promisedDelivery && s.promisedDelivery < now)
+        emit('overdue_promise', id, {days: daysBetween(s.promisedDelivery, now), promised: s.promisedDelivery});
+      const predecessors = (s.predecessors || []).map(p => rows[p]);
+      if (predecessors.some(p => !p.forecastFinish)) {
+        row.forecastConfidence = 'blocked';
+        emit('blocked_by_unknown_predecessor', id, {predecessorIds: (s.predecessors || []).filter(p => !rows[p].forecastFinish)});
+        continue;
+      }
+      const earliest = maxDate(now, ...predecessors.map(p => addDate(p.forecastFinish, 1)));
+      const minExpected = addDate(earliest, s.days - 1);
+      const forecast = s.promisedDelivery && s.promisedDelivery >= now
+        ? maxDate(minExpected, s.promisedDelivery) : minExpected;
+      row.forecastStart = earliest; row.forecastFinish = forecast;
+      row.forecastConfidence = s.durationProvisional ? 'provisional' : 'estimated';
+      row.slackDays = daysBetween(forecast, row.latestFinish);
+      if (forecast > row.latestFinish) emit('predicted_late', id, {days: daysBetween(row.latestFinish, forecast)});
+      if (s.durationProvisional) emit('unquantified_duration', id);
+    }
+    const actualDispatch = asDate(req.actualDispatch), actualReceipt = asDate(req.actualReceipt);
+    if (actualDispatch) {
+      if (actualDispatch > latestDispatch) emit('late_dispatch', null, {days: daysBetween(latestDispatch, actualDispatch)});
+      if (steps.some(s => !s.completed)) emit('dispatched_with_incomplete_steps', null, {stepIds: steps.filter(s => !s.completed).map(s => s.id)});
+      if (steps.some(s => s.completed && !s.actualFinished)) emit('dispatched_with_unknown_dates', null);
+    }
+    if (actualReceipt && actualReceipt > receipt) emit('late_receipt', null, {days: daysBetween(receipt, actualReceipt)});
+    if (actualReceipt && !actualDispatch) emit('received_without_dispatch', null);
+    return {
+      today: now, receiptDeadline: receipt, latestDispatch, latestProductReady,
+      predictedReceiptFromDispatch: actualDispatch ? addDate(actualDispatch, transit) : null,
+      rows, order, diagnostics
+    };
+  }
+
+  // Integer micro-units make even fractional P quantities sum exactly; partial pages use quantum=0.5.
+  function allocateQuantity({total, initialDone = 0, logs = [], unit = 1, start, finish, excludedDates = []}) {
+    if (!(unit > 0) || !Number.isFinite(unit) || !Number.isFinite(total) || !Number.isFinite(initialDone)) throw new Error('非法工作量');
+    const toTicks = (v) => {const n=v / unit; if (Math.abs(n-Math.round(n)) > 1e-7) throw new Error('数量不是最小单位的整数倍');return Math.round(n);};
+    let done = toTicks(initialDone);
+    if (done < 0) throw new Error('初始完成量不能为负');
+    for (const x of logs) if (!x.voided && !x.deleted) done += toTicks(Number(x.amount || 0));
+    if (done < 0) throw new Error('累计完成量不能为负');
+    const target = toTicks(total), left = Math.max(0, target - done);
+    const dates = [];
+    const excluded = new Set(excludedDates);
+    if (daysBetween(start, finish) >= 0) for (let d = start; d <= finish; d = addDate(d, 1)) {
+      if (!excluded.has(d)) dates.push(d);
+    }
+    const quotas = {};
+    dates.forEach((date, i) => quotas[date] = (Math.floor((i+1)*left/dates.length)-Math.floor(i*left/dates.length))*unit);
+    const planned = Object.values(quotas).reduce((a,b)=>a+b,0);
+    return {target:target*unit, done:done*unit, remaining:left*unit, overTarget:Math.max(0,(done-target)*unit),
+      quotas, unscheduled:left>0 && !dates.length ? left*unit : 0,
+      conserved:Math.abs(planned - (left && dates.length?left*unit:0)) < 1e-7};
+  }
+
+  return Object.freeze({plan, allocateQuantity, addDate, daysBetween});
+});
+
+/* Read-only adapter: v0.3.1 localStorage JSON -> proposed P0 DAG.
+   No guessed completion timestamps and no automatic migration/write-back. */
+(function(root, build) {
+  const core = typeof module === 'object' && module.exports ? require('./scheduler.js') : root.FandomSchedulerP0;
+  const api = build(core);
+  if (typeof module === 'object' && module.exports) module.exports = api;
+  if (root) root.FandomLegacyAdapterP0 = api;
+})(typeof globalThis !== 'undefined' ? globalThis : this, function(core) {
+  'use strict';
+  if (!core) throw new Error('需要先载入 scheduler.js');
+  const validDate = value => typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value) && (()=>{try{core.daysBetween(value,value);return true;}catch{return false;}})();
+  const shippingStep = s => s?.purpose === 'shipping' || (s?.kind === 'external' && /^(运输|快递运输|物流运输)$/.test(s.name || ''));
+  function migratePreview({product, event, logs = [], today}) {
+    if (!product || !event || !validDate(event.ddl)) throw new Error('制品必须关联含有效收货 DDL 的活动');
+    if (!Array.isArray(product.tracks) || !Array.isArray(product.shared)) throw new Error('旧版制品结构不完整');
+    const warnings = [], meta = Object.create(null), steps = [];
+    const allLogs = logs.filter(l => l.productId === product.id);
+    const production = product.shared.slice();
+    const shipIndices = production.map((s,i)=>shippingStep(s)?i:-1).filter(i=>i>=0);
+    let ship = null;
+    if (shipIndices.length === 1 && shipIndices[0] === production.length-1) {
+      ship = production.pop();
+    } else if (shipIndices.length) {
+      throw new Error('运输工序需要恰好一条且为下印流程末项；请人工修复，不能自动猜');
+    } else warnings.push({type:'missing_shipping',message:'旧数据未提供运输工序；暂按运输 0 天演示，必须由主催确认。'});
+    const transit = ship ? Math.max(0, Math.round(Number(ship.days)||0)) : 0;
+    const buffer = Number.isInteger(product.handoffBufferDays) && product.handoffBufferDays>=0 ? product.handoffBufferDays : 1;
+    if (product.handoffBufferDays === undefined) warnings.push({type:'inferred_buffer',message:'旧版采用隐含交接缓冲；此处暂按 1 天演示，正式迁移须确认。'});
+
+    const completionFor = (s) => {
+      const related = allLogs.filter(l=>l.stepId===s.id && !l.deleted && !l.voided).sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+      const isPiece = !!s.pieceStage && Array.isArray(product.pieces);
+      const initial = Number(s.done)||0;
+      const written = related.reduce((sum,l)=>sum+(Number(l.amount)||0),0);
+      const finishedCount = isPiece ? product.pieces.filter(piece=>!!piece[s.pieceStage]).length : Math.max(0,initial+written);
+      const completed = !!s.completed || (s.kind==='quantity' && Number(s.total)>0 && finishedCount >= Number(s.total));
+      let at = validDate(s.completedAt) ? s.completedAt : null;
+      if (!at && s.completedAt) warnings.push({type:'bad_completion_date',stepId:s.id,message:'旧环节实际完成日无效，不会采用'});
+      if (!at && !isPiece) {
+        const marked = related.filter(l=>l.completedByLog && validDate(l.date));
+        if (marked.length) at=marked[marked.length-1].date;
+      }
+      // Quantity completion from persisted logs is inferable only if initialDone is below goal
+      // and valid logs can prove the threshold-crossing date. Never infer from piece booleans.
+      if (!at && !isPiece && completed && s.kind === 'quantity' && initial < Number(s.total)) {
+        let count = initial;
+        for(const log of related){count += Number(log.amount)||0;if(count>=Number(s.total)&&validDate(log.date)){at=log.date;break;}}
+      }
+      if (completed && !at) warnings.push({type:'unknown_actual',stepId:s.id,message:'工序标记完成但无法证明实际完成日期；保留为未知'});
+      return {completed,actualFinished:completed?at:null,finishedCount};
+    };
+    const addStep=(s,predecessors,area,track)=>{
+      if(!s.id || meta[s.id])throw new Error('工序 ID 无效或重复: '+s.id);
+      const c=completionFor(s);
+      // An unconfigured quantity workload MUST NOT imply it can truly finish in one day.
+      // The one-day placeholder is explicitly marked provisional and never treated as a reliable ETA.
+      const duration = s.kind==='quantity'
+        ? (Number.isInteger(s.plannedDays) && s.plannedDays>=1 ? s.plannedDays : 1)
+        : Math.max(1, Math.ceil(Number(s.days)||1));
+      const durationProvisional = s.kind==='quantity' && !(Number.isInteger(s.plannedDays) && s.plannedDays>=1);
+      if(durationProvisional)warnings.push({type:'quantity_duration_unknown',stepId:s.id,message:'旧数据缺少稳定的数量型工期；先用一日技术占位，禁止直接作为可靠预测'});
+      steps.push({id:s.id,days:duration,predecessors:[...predecessors],completed:c.completed,
+        actualFinished:c.actualFinished, promisedDelivery:validDate(s.promisedDelivery)?s.promisedDelivery:null,
+        dueBy:validDate(s.dueBy)?s.dueBy:null,durationProvisional});
+      meta[s.id]={productId:product.id,stepName:s.name,area,trackId:track?.id||null,
+        owner:track?.owner||null,isMine:typeof s.isMine==='boolean'?s.isMine:(typeof track?.isMine==='boolean'?track.isMine:track?.owner==='主催'),
+        durationProvisional,originalKind:s.kind,completed:c.completed,completedCount:c.finishedCount,
+        target:Number(s.total)||0};
+    };
+    const ends = [];
+    for(const track of product.tracks){
+      let predecessor=[];
+      for(const s of (track.steps||[])){
+        addStep(s,predecessor,'track',track);predecessor=[s.id];
+      }
+      if(predecessor.length)ends.push(predecessor[0]);
+    }
+    let predecessor=ends;
+    for(const s of production){addStep(s,predecessor,'production',null);predecessor=[s.id];}
+    if(!production.length && !ends.length)warnings.push({type:'no_steps',message:'制品没有任何工序，无法推算创作时间'});
+    const shipLogs = ship ? allLogs.filter(l=>l.stepId===ship.id && l.completedByLog && validDate(l.date)) : [];
+    const actualDispatch = ship && validDate(ship.completedAt) ? ship.completedAt
+      : shipLogs.length ? shipLogs.sort((a,b)=>a.date.localeCompare(b.date)).at(-1).date:null;
+    if (ship?.completed && !actualDispatch) warnings.push({type:'unknown_dispatch_date',message:'旧版标记为已寄出，但缺少实际寄出日期'});
+    const input={today,receiptDeadline:event.ddl,transitDays:transit,handoffBufferDays:buffer,
+      steps,actualDispatch,actualReceipt:validDate(product.actualReceipt)?product.actualReceipt:null};
+    return {input,meta,warnings};
+  }
+  function previewAll(raw, today) {
+    const d = raw && raw.data && Array.isArray(raw.data.products) ? raw.data : raw;
+    if(!d || !Array.isArray(d.events) || !Array.isArray(d.products) || !Array.isArray(d.logs))throw new Error('不是有效的旧版纸上赶稿备份');
+    const results=[];
+    for(const p of d.products){
+      const e=d.events.find(e=>e.id===p.eventId);
+      try{
+        const converted=migratePreview({product:p,event:e,logs:d.logs,today});
+        results.push({productId:p.id,title:p.title,preview:converted,plan:core.plan(converted.input)});
+      }catch(err){results.push({productId:p.id,title:p.title,error:String(err.message||err)});}
+    }
+    return results;
+  }
+  return Object.freeze({migratePreview,previewAll});
+});
+
+
+const DEMO = {"events": [{"id": "demo-ev", "name": "春日活动（演示）", "mode": "official", "ddl": "2026-12-30"}], "products": [{"id": "demo-prod", "title": "《示例合志》", "eventId": "demo-ev", "type": "anthology", "tracks": [{"id": "writerA", "name": "文本内容-作者A", "owner": "作者A", "isMine": false, "steps": [{"id": "outline", "name": "大纲", "kind": "fixed", "days": 2, "completed": true, "completedAt": "2026-12-01"}, {"id": "body", "name": "正文", "kind": "quantity", "unit": "字", "total": 20000, "done": 12000, "promisedDelivery": "2026-12-24"}]}, {"id": "artistB", "name": "绘图内容-画师B", "owner": "画师B", "isMine": false, "steps": [{"id": "draft", "name": "草稿", "kind": "external", "days": 3, "completed": true, "completedAt": "2026-12-04"}, {"id": "final-art", "name": "成图", "kind": "external", "days": 6, "promisedDelivery": "2026-12-20"}]}], "shared": [{"id": "typeset", "name": "排版", "kind": "fixed", "days": 2}, {"id": "sample", "name": "打样", "kind": "external", "days": 5}, {"id": "big", "name": "大货", "kind": "external", "days": 7}, {"id": "ship", "name": "运输", "kind": "external", "days": 3, "purpose": "shipping"}], "pieces": []}], "logs": []};
+const $ = s => document.querySelector(s);
+const esc = s => String(s??'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const getToday = () => {const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')};
+let current=null;$('#today').value=getToday();
+const messages = {
+ promise_after_latest:'约定交稿晚于允许日期',predicted_late:'按预计工期可能超期',
+ missing_actual_date:'旧版已完成记录缺少实际日期',blocked_by_unknown_predecessor:'前置工序日期未知，当前预测不可计算',
+ overdue_promise:'外部交稿承诺已过期',completed_before_predecessor:'下游已完成但前置环节未完成',
+ actual_order_conflict:'工序实际完成日期顺序冲突',historically_late:'历史完成日超过最晚日期',
+ unquantified_duration:'数量工作缺少稳定工期',dispatched_with_incomplete_steps:'已寄出但仍有工序未标完成',
+ dispatched_with_unknown_dates:'已寄出但前置工序实际日期未知',late_dispatch:'实际寄出超期',late_receipt:'签收超期',
+ received_without_dispatch:'有签收记录但缺少寄出记录'};
+function render(){
+ if(!current)return;
+ let results;
+ try{results=FandomLegacyAdapterP0.previewAll(current,$('#today').value||getToday())}
+ catch(e){$('#result').innerHTML='<div class="issue critical">'+esc(e.message)+'</div>';return;}
+ const html=results.map(r=>{
+   if(r.error)return `<article class="card"><h2>${esc(r.title)}</h2><div class="issue critical">${esc(r.error)}</div></article>`;
+   const plan=r.plan,meta=r.preview.meta,issues=[...r.preview.warnings.map(w=>({...w,source:'兼容检查'})),...plan.diagnostics.map(w=>({...w,source:'排程检查'}))];
+   const bad=issues.filter(w=>['predicted_late','promise_after_latest','late_dispatch','late_receipt','completed_before_predecessor','actual_order_conflict'].includes(w.type));
+   const rows=plan.order.map(id=>{const row=plan.rows[id],st=meta[id];return `<tr><td>${esc(st.stepName)}<small>${esc(st.owner||'下印环节')}</small></td><td>${row.latestProvisional?`<span class="badge warn">暂定</span><br>`:''}${esc(row.latestFinish)}</td><td>${esc(row.forecastFinish||'待确认')}</td><td>${row.completed?'<span class="badge">已完成</span>':row.forecastConfidence==='blocked'?'<span class="badge warn">前置未知</span>':row.forecastConfidence==='provisional'?'<span class="badge warn">仅参考</span>':'待完成'}</td></tr>`}).join('');
+   const selected=issues.slice(0,15).map(d=>`<div class="issue ${['predicted_late','promise_after_latest','late_dispatch','completed_before_predecessor'].includes(d.type)?'critical':''}"><b>${esc(d.source)} · ${esc(messages[d.type]||d.message||d.type)}</b> ${d.days!=null?`（相差 ${esc(d.days)} 天）`:''} ${d.stepId&&meta[d.stepId]?` · ${esc(meta[d.stepId].stepName)}`:''}</div>`).join('');
+   return `<article class="card"><h2>${esc(r.title)} <span class="badge ${bad.length?'bad':''}">${bad.length?`${bad.length} 项关键问题`:'无确定性延期冲突'}</span></h2><div class="summary"><div class="metric"><small>收货 DDL</small><strong>${esc(plan.receiptDeadline)}</strong></div><div class="metric"><small>最晚寄出</small><strong>${esc(plan.latestDispatch)}</strong></div><div class="metric"><small>最晚生产完成</small><strong>${esc(plan.latestProductReady)}</strong></div></div>
+   ${issues.length?`<details ${bad.length?'open':''}><summary>查看 ${issues.length} 项诊断及需确认事项</summary>${selected}${issues.length>15?`<p class="muted">另有 ${issues.length-15} 项，请查看完整数据。</p>`:''}</details>`:'<p class="muted">暂无诊断。</p>'}
+   <details><summary>查看 ${plan.order.length} 项工序日期</summary><div class="scroll"><table><thead><tr><th>环节 / 参与者</th><th>最晚允许完成</th><th>最新预测</th><th>状态</th></tr></thead><tbody>${rows}</tbody></table></div></details></article>`;
+ }).join('');
+ $('#result').innerHTML=`<p class="muted">共 ${results.length} 件制品 · 仅查看，不修改历史记录。临时工期占位不构成真实可行性保证。</p>`+html;
+}
+$('#demo').onclick=()=>{current=DEMO;$('#today').value='2026-12-08';render();};
+$('#file').onchange=async e=>{try{const f=e.target.files?.[0];if(!f)return;current=JSON.parse(await f.text());render();}catch(err){$('#result').innerHTML='<div class="issue critical">'+esc(err.message)+'</div>';}};
+$('#today').onchange=render;
+
+</script></body></html>
