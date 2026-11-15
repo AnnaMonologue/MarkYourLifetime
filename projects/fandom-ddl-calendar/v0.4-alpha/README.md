@@ -36,7 +36,7 @@
 
 ## 规范
 
-- [产品逻辑总规范](../../docs/fandom-ddl-calendar/PRODUCT_LOGIC_v1.0.md)
-- [P0 排程技术研究](../../docs/fandom-ddl-calendar/SCHEDULING_ENGINE_RESEARCH_v0.1.md)
+- [产品逻辑总规范](../../../docs/fandom-ddl-calendar/PRODUCT_LOGIC_v1.0.md)
+- [P0 排程技术研究](../../../docs/fandom-ddl-calendar/SCHEDULING_ENGINE_RESEARCH_v0.1.md)
 
 本版是设计验证，不应代替印厂官方工期、漫展官仓时限或快递保证时效。凡无法证明的实际日期必须明确标为未知。
