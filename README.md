@@ -10,3 +10,4 @@
 - [纸上赶稿 v0.6 Alpha 网页与说明](projects/fandom-ddl-calendar/v0.6-alpha/README.md)
 
 当前阶段：独立 Alpha 原型迭代，仍需完整排程验收。详细文档独立存放于 `docs/fandom-ddl-calendar/`，不影响仓库原有内容。
+- [纸上赶稿 v0.8 Alpha（已修复交互版本）](projects/fandom-ddl-calendar/v0.8-alpha/README.md)
